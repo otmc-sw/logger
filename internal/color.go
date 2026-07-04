@@ -11,31 +11,32 @@ import (
 
 // ANSI color codes
 const (
-	colorReset     = "\033[0m"
-	colorGray      = "\033[90m"
-	colorBlue      = "\033[34m"
-	colorGreen     = "\033[32m"
-	colorYellow    = "\033[33m"
-	colorRed       = "\033[31m"
-	colorBrightRed = "\033[91m"
-	colorRedBg     = "\033[41m"
+	colorReset      = "\033[0m"
+	colorWhiteBg    = "\033[47m"
+	colorCyanBg     = "\033[46m"
+	colorBlueBg     = "\033[44m"
+	colorYellowBg   = "\033[43m"
+	colorRedBg      = "\033[41m"
+	colorLightRedBg = "\033[101m"
+	colorRed        = "\033[31m"
+	colorYellow     = "\033[33m"
 )
 
 // ColorLevel returns the colored level string
 func ColorLevel(level string) string {
 	switch level {
 	case "TRACE":
-		return colorGray + " TRACE " + colorReset
+		return colorWhiteBg + " TRACE " + colorReset
 	case "DEBUG":
-		return colorBlue + " DEBUG " + colorReset
+		return colorCyanBg + " DEBUG " + colorReset
 	case "INFO":
-		return colorGreen + " INFO  " + colorReset
+		return colorBlueBg + " INFO  " + colorReset
 	case "WARN":
-		return colorYellow + " WARN  " + colorReset
+		return colorYellowBg + " WARN  " + colorReset
 	case "ERROR":
-		return colorRed + " ERROR " + colorReset
+		return colorRedBg + " ERROR " + colorReset
 	case "CRIT":
-		return colorBrightRed + " CRIT  " + colorReset
+		return colorLightRedBg + " CRIT  " + colorReset
 	default:
 		return "UNKNOWN"
 	}
@@ -44,13 +45,14 @@ func ColorLevel(level string) string {
 // StripColorCodes removes ANSI color codes from a string
 func StripColorCodes(s string) string {
 	s = strings.ReplaceAll(s, colorReset, "")
-	s = strings.ReplaceAll(s, colorGray, "")
-	s = strings.ReplaceAll(s, colorBlue, "")
-	s = strings.ReplaceAll(s, colorGreen, "")
-	s = strings.ReplaceAll(s, colorYellow, "")
-	s = strings.ReplaceAll(s, colorRed, "")
-	s = strings.ReplaceAll(s, colorBrightRed, "")
+	s = strings.ReplaceAll(s, colorWhiteBg, "")
+	s = strings.ReplaceAll(s, colorCyanBg, "")
+	s = strings.ReplaceAll(s, colorBlueBg, "")
+	s = strings.ReplaceAll(s, colorYellowBg, "")
 	s = strings.ReplaceAll(s, colorRedBg, "")
+	s = strings.ReplaceAll(s, colorLightRedBg, "")
+	s = strings.ReplaceAll(s, colorRed, "")
+	s = strings.ReplaceAll(s, colorYellow, "")
 	return s
 }
 
@@ -62,7 +64,7 @@ func ColorMessage(level string, message string) string {
 	case "ERROR":
 		return colorRed + message + colorReset
 	case "CRIT":
-		return colorBrightRed + message + colorReset
+		return colorRed + message + colorReset
 	default:
 		return message
 	}

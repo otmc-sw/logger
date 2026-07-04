@@ -29,7 +29,7 @@ func (f *PrettyFormatter) Format(entry internal.Entry) string {
 
 	if f.colorize {
 		levelStr = internal.ColorLevel(levelStr)
-		message = internal.ColorMessage(levelStr, message)
+		message = internal.ColorMessage(entry.Level.String(), message)
 	}
 
 	return fmt.Sprintf(
