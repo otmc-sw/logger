@@ -88,15 +88,10 @@ logger.Init(logger.Config{
 
 ```
 logger.Trace("Loading configuration")
-
 logger.Debug("Connecting to %s", host)
-
 logger.Info("Server started on %s:%d", host, port)
-
 logger.Warn("Memory usage: %d MB", memory)
-
 logger.Error("Database error: %v", err)
-
 logger.Crit("Application crashed: %v", err)
 ```
 
@@ -114,13 +109,9 @@ Ví dụ
 
 ```
 logger.Info("Application Started")
-
 logger.Info("Listening on %s:%d", host, port)
-
 logger.Info("%d records loaded", total)
-
 logger.Warn("Memory usage %.2f%%", percent)
-
 logger.Error("Open file %s failed: %v", filename, err)
 ```
 
@@ -138,19 +129,12 @@ Người dùng không cần gọi `fmt.Sprintf()`.
 
 ```
 type Logger interface {
-
     Trace(format string, args ...any)
-
     Debug(format string, args ...any)
-
     Info(format string, args ...any)
-
     Warn(format string, args ...any)
-
     Error(format string, args ...any)
-
     Crit(format string, args ...any)
-
     Sync() error
 }
 ```
@@ -161,15 +145,10 @@ type Logger interface {
 
 ```
 logger.New(
-
     logger.WithConsole(),
-
     logger.WithFile("logs/app.log"),
-
     logger.WithJSON(),
-
     logger.WithLevel(logger.DebugLevel),
-
 )
 ```
 
@@ -179,27 +158,16 @@ logger.New(
 
 ```
 type Config struct {
-
     Level Level
-
     Console bool
-
     File bool
-
     Filename string
-
     JSON bool
-
     Caller bool
-
     Stacktrace bool
-
     MaxSize int
-
     MaxBackups int
-
     MaxAge int
-
     Compress bool
 }
 ```
@@ -237,25 +205,16 @@ Hỗ trợ ghi đồng thời nhiều nơi.
 
 ```
 Console
-
-+
-
-File
-
-+
-
-Webhook
++File
++Webhook
 ```
 
 Ví dụ
 
 ```
 logger.New(
-
     logger.WithConsole(),
-
     logger.WithFile("logs/app.log"),
-
 )
 ```
 
@@ -335,17 +294,11 @@ Ví dụ
 
 ```
 Application
-
 ↓
-
 Logger
-
 ↓
-
 Webhook
-
 ↓
-
 Discord
 ```
 
@@ -355,18 +308,13 @@ Discord
 
 ```
 TRACE
-
 DEBUG
-
 INFO
-
+NOTE
+EVENT
 WARN
-
 ERROR
-
-FATAL
-
-PANIC
+CRIT
 ```
 
 ---
@@ -381,27 +329,18 @@ import "github.com/otmc-sw/logger"
 func main() {
 
     logger.Init(logger.Config{
-
         Level: logger.DebugLevel,
-
         Console: true,
-
         File: true,
-
         Filename: "logs/app.log",
 
     })
 
     logger.Info("🚀 Application Started")
-
     logger.Info("🌐 Listening on %s:%d", host, port)
-
     logger.Info("📦 Loaded %d modules", modules)
-
     logger.Warn("⚠️ Memory usage %d MB", memory)
-
     logger.Error("❌ Database error: %v", err)
-
     logger.Crit("💥 Critical failure: %v", err)
 }
 ```

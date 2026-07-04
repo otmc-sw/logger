@@ -31,7 +31,7 @@
 | Timestamp | Thời gian đầy đủ kèm múi giờ |
 | Function | Tên hàm gọi logger |
 | File:Line | File nguồn và số dòng |
-| Level | Mức độ log (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, PANIC) |
+| Level | Mức độ log (TRACE, DEBUG, INFO, WARN, ERROR, CRIT) |
 | Message | Nội dung log |
 
 ---
@@ -84,8 +84,7 @@ Chỉ áp dụng khi ghi ra Console.
 | INFO | Green |
 | WARN | Yellow |
 | ERROR | Red |
-| FATAL | Bright Red |
-| PANIC | Red Background |
+| CRIT | Bright Red |
 
 > Chỉ nên tô màu phần **Level** để giữ log rõ ràng và dễ đọc. Khi ghi ra file, màu sắc sẽ tự động bị loại bỏ.
 

@@ -1,8 +1,8 @@
-# OTMC Logger
+# 📚 OTMC Logger
 
 A simple, high-performance logging library for Go applications, designed for CLI, Desktop, API, and Server applications.
 
-## Features
+## ✨ Features
 
 - **Simple API** - Similar to `fmt.Printf`, easy to use
 - **Beautiful Console Output** - Automatic formatting with colors and alignment
@@ -13,13 +13,13 @@ A simple, high-performance logging library for Go applications, designed for CLI
 - **Thread-Safe** - Safe for concurrent use
 - **Production Ready** - Default configuration optimized for production
 
-## Installation
+## 📦 Installation
 
 ```bash
 go get github.com/otmc-sw/logger
 ```
 
-## Quick Start
+## 🚀 Quick Start
 
 ```go
 package main
@@ -36,6 +36,7 @@ func main() {
         Filename: "logs/app.log",
         Caller:   true,
     })
+    err := "OTMC Testing Message"
 
 	logger.Trace("🚀 Starting application...")
 	logger.Debug("📝 Configuration loaded from %s", "config.yaml")
@@ -46,7 +47,7 @@ func main() {
 }
 ```
 
-## Console Output
+## 🖥️ Console Output
 
 The logger automatically formats output with timestamps, caller information, and colors:
 
@@ -56,9 +57,9 @@ The logger automatically formats output with timestamps, caller information, and
 2026-07-04 15:49:40.405 +07:00                 Warn()       global.go:25    | WARN  | ⚠️ Memory usage is high 85.5
 ```
 
-## Configuration
+## ⚙️ Configuration
 
-### Using Config
+### 🔧 Using Config
 
 ```go
 logger.Init(logger.Config{
@@ -75,7 +76,7 @@ logger.Init(logger.Config{
 })
 ```
 
-### Using Functional Options
+### 🛠️ Using Functional Options
 
 ```go
 log := logger.New(
@@ -91,7 +92,7 @@ log := logger.New(
 )
 ```
 
-## Log Levels
+## 📊 Log Levels
 
 ```go
 logger.Trace("Detailed trace information")
@@ -102,9 +103,9 @@ logger.Error("Error messages")
 logger.Crit("Critical errors (exits after logging)")
 ```
 
-## Formatters
+## 🎨 Formatters
 
-### Pretty Formatter (Default)
+### 🎯 Pretty Formatter (Default)
 
 ```go
 log := logger.New(
@@ -117,7 +118,7 @@ Output:
 2026-07-04 15:49:40.404 +07:00                 Info()       main.go:20    | INFO  | Application started
 ```
 
-### Text Formatter
+### 📝 Text Formatter
 
 ```go
 log := logger.New(
@@ -126,7 +127,7 @@ log := logger.New(
 // Use TextFormatter by setting it on the core
 ```
 
-### JSON Formatter
+### 📋 JSON Formatter
 
 ```go
 log := logger.New(
@@ -147,7 +148,7 @@ Output:
 }
 ```
 
-## Global Logger
+## 🌍 Global Logger
 
 The library provides a global logger instance for convenience:
 
@@ -165,7 +166,7 @@ logger.Init(logger.Config{
 logger.SetLevel(logger.WarnLevel)
 ```
 
-## Custom Logger
+## 🔧 Custom Logger
 
 Create multiple logger instances with different configurations:
 
@@ -189,7 +190,7 @@ jsonLog := logger.New(
 )
 ```
 
-## Log Rotation
+## ♻️ Log Rotation
 
 Automatic log rotation using lumberjack:
 
@@ -204,20 +205,20 @@ logger.Init(logger.Config{
 })
 ```
 
-## Color Output
+## 🎨 Color Output
 
 Colors are automatically applied to console output:
 
-- **TRACE** - Gray
-- **DEBUG** - Blue
-- **INFO** - Green
-- **WARN** - Yellow
-- **ERROR** - Red
-- **CRIT** - Bright Red
+- ⚪ **TRACE** - Gray
+- 🔵 **DEBUG** - Blue
+- 🟢 **INFO** - Green
+- 🟡 **WARN** - Yellow
+- 🔴 **ERROR** - Red
+- 🔴 **CRIT** - Bright Red
 
 Colors are automatically stripped when writing to files.
 
-## Architecture
+## 🏗️ Architecture
 
 ```
 Application
@@ -231,16 +232,16 @@ Core Engine
 └── Hooks (Webhook, Discord, Slack, etc.)
 ```
 
-## License
+## 📄 License
 
 Apache License 2.0
 
-## Copyright
+## ©️ Copyright
 
 Copyright (c) 2026 OTMC Softwares
 
-## Contributors
+## ✨ Contributors
 
-- Nguyen Van Trung
-- Nguyen Thi Hoai
-- OTMC Contributors
+- 🌿 Nguyen Van Trung
+- 🌿 Nguyen Thi Hoai
+- 🌿 OTMC Contributors
