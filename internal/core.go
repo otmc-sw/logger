@@ -116,7 +116,7 @@ func (c *Core) AddHook(hook Hook) {
 }
 
 // Log logs a message at the specified level
-func (c *Core) Log(level Level, format string, args ...any) {
+func (c *Core) Log(level Level, skip int, format string, args ...any) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -132,7 +132,7 @@ func (c *Core) Log(level Level, format string, args ...any) {
 	entry.Message = message
 
 	if c.caller {
-		caller := GetCaller(3)
+		caller := GetCaller(skip)
 		entry.Function = caller.Function
 		entry.File = caller.File
 		entry.Line = caller.Line

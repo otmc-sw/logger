@@ -92,32 +92,32 @@ func Init(config Config) {
 
 // Trace logs a trace message
 func (l *stdLogger) Trace(format string, args ...any) {
-	l.core.Log(internal.TraceLevel, format, args...)
+	l.core.Log(internal.TraceLevel, 4, format, args...)
 }
 
 // Debug logs a debug message
 func (l *stdLogger) Debug(format string, args ...any) {
-	l.core.Log(internal.DebugLevel, format, args...)
+	l.core.Log(internal.DebugLevel, 4, format, args...)
 }
 
 // Info logs an info message
 func (l *stdLogger) Info(format string, args ...any) {
-	l.core.Log(internal.InfoLevel, format, args...)
+	l.core.Log(internal.InfoLevel, 4, format, args...)
 }
 
 // Warn logs a warning message
 func (l *stdLogger) Warn(format string, args ...any) {
-	l.core.Log(internal.WarnLevel, format, args...)
+	l.core.Log(internal.WarnLevel, 4, format, args...)
 }
 
 // Error logs an error message
 func (l *stdLogger) Error(format string, args ...any) {
-	l.core.Log(internal.ErrorLevel, format, args...)
+	l.core.Log(internal.ErrorLevel, 4, format, args...)
 }
 
 // Crit logs a critical message and exits
 func (l *stdLogger) Crit(format string, args ...any) {
-	l.core.Log(internal.CritLevel, format, args...)
+	l.core.Log(internal.CritLevel, 4, format, args...)
 }
 
 // Sync flushes the logger

@@ -33,6 +33,8 @@ func main() {
 
 	logger.Info("✅ All tests completed!")
 	_ = logger.Sync()
+
+	testCrit()
 }
 
 func testBasicConsoleLogging() {
@@ -50,7 +52,6 @@ func testBasicConsoleLogging() {
 	logger.Info("✅ Info message - general information")
 	logger.Warn("⚠️ Warn message - warning condition")
 	logger.Error("❌ Error message - error occurred")
-	// logger.Crit("💥 Crit message - critical (would exit)")
 }
 
 func testFileLogging() {
@@ -167,4 +168,9 @@ func testLogLevelFiltering() {
 		Console: true,
 		Caller:  true,
 	})
+}
+
+func testCrit() {
+	logger.Info("=== Test 6: Critical Logging ===")
+	logger.Crit("💥 This crit SHOULD appear and program will exit")
 }
