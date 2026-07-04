@@ -380,7 +380,7 @@ PANIC
 ```
 package main
 
-import "github.com/otmcsoftwares/logger"
+import "github.com/otmc-sw/logger"
 
 func main() {
 
