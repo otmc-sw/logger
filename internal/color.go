@@ -34,10 +34,8 @@ func ColorLevel(level string) string {
 		return colorYellow + " WARN  " + colorReset
 	case "ERROR":
 		return colorRed + " ERROR " + colorReset
-	case "FATAL":
-		return colorBrightRed + " FATAL " + colorReset
-	case "PANIC":
-		return colorRedBg + " PANIC " + colorReset
+	case "CRIT":
+		return colorBrightRed + " CRIT  " + colorReset
 	default:
 		return "UNKNOWN"
 	}
@@ -54,4 +52,18 @@ func StripColorCodes(s string) string {
 	s = strings.ReplaceAll(s, colorBrightRed, "")
 	s = strings.ReplaceAll(s, colorRedBg, "")
 	return s
+}
+
+// ColorMessage returns the colored message string based on level
+func ColorMessage(level string, message string) string {
+	switch level {
+	case "WARN":
+		return colorYellow + message + colorReset
+	case "ERROR":
+		return colorRed + message + colorReset
+	case "CRIT":
+		return colorBrightRed + message + colorReset
+	default:
+		return message
+	}
 }

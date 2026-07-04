@@ -18,8 +18,7 @@ const (
 	InfoLevel  = internal.InfoLevel
 	WarnLevel  = internal.WarnLevel
 	ErrorLevel = internal.ErrorLevel
-	FatalLevel = internal.FatalLevel
-	PanicLevel = internal.PanicLevel
+	CritLevel  = internal.CritLevel
 )
 
 // ParseLevel parses a string level and returns the Level constant
@@ -35,10 +34,8 @@ func ParseLevel(level string) Level {
 		return WarnLevel
 	case "ERROR":
 		return ErrorLevel
-	case "FATAL":
-		return FatalLevel
-	case "PANIC":
-		return PanicLevel
+	case "CRIT":
+		return CritLevel
 	default:
 		return InfoLevel
 	}

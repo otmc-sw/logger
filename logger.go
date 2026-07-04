@@ -19,8 +19,7 @@ type Logger interface {
 	Info(format string, args ...any)
 	Warn(format string, args ...any)
 	Error(format string, args ...any)
-	Fatal(format string, args ...any)
-	Panic(format string, args ...any)
+	Crit(format string, args ...any)
 	Sync() error
 }
 
@@ -116,14 +115,9 @@ func (l *stdLogger) Error(format string, args ...any) {
 	l.core.Log(internal.ErrorLevel, format, args...)
 }
 
-// Fatal logs a fatal message and exits
-func (l *stdLogger) Fatal(format string, args ...any) {
-	l.core.Log(internal.FatalLevel, format, args...)
-}
-
-// Panic logs a panic message and panics
-func (l *stdLogger) Panic(format string, args ...any) {
-	l.core.Log(internal.PanicLevel, format, args...)
+// Crit logs a critical message and exits
+func (l *stdLogger) Crit(format string, args ...any) {
+	l.core.Log(internal.CritLevel, format, args...)
 }
 
 // Sync flushes the logger

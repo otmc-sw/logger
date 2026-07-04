@@ -33,6 +33,7 @@ func main() {
 	logger.Info("✅ Application started successfully")
 	logger.Warn("⚠️ This is a warning message")
 	logger.Error("❌ An error occurred")
+	logger.Crit("💥 Critical failure - shutting down")
 
 	// Example with formatting
 	logger.Info("🌐 Server listening on %s:%d", "localhost", 8080)

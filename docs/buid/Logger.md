@@ -97,9 +97,7 @@ logger.Warn("Memory usage: %d MB", memory)
 
 logger.Error("Database error: %v", err)
 
-logger.Fatal("Application crashed: %v", err)
-
-logger.Panic("Unexpected error: %v", err)
+logger.Crit("Application crashed: %v", err)
 ```
 
 ---
@@ -151,9 +149,7 @@ type Logger interface {
 
     Error(format string, args ...any)
 
-    Fatal(format string, args ...any)
-
-    Panic(format string, args ...any)
+    Crit(format string, args ...any)
 
     Sync() error
 }
@@ -405,6 +401,8 @@ func main() {
     logger.Warn("⚠️ Memory usage %d MB", memory)
 
     logger.Error("❌ Database error: %v", err)
+
+    logger.Crit("💥 Critical failure: %v", err)
 }
 ```
 

@@ -8,7 +8,7 @@ A simple, high-performance logging library for Go applications, designed for CLI
 - **Beautiful Console Output** - Automatic formatting with colors and alignment
 - **File Logging** - With automatic rotation support
 - **Multiple Formatters** - Pretty (default), Text, and JSON
-- **Log Levels** - TRACE, DEBUG, INFO, WARN, ERROR, FATAL, PANIC
+- **Log Levels** - TRACE, DEBUG, INFO, WARN, ERROR, CRIT
 - **Caller Information** - Automatically captures function, file, and line number
 - **Thread-Safe** - Safe for concurrent use
 - **Production Ready** - Default configuration optimized for production
@@ -29,7 +29,6 @@ import (
 )
 
 func main() {
-    // Initialize logger
     logger.Init(logger.Config{
         Level:    logger.InfoLevel,
         Console:  true,
@@ -38,10 +37,12 @@ func main() {
         Caller:   true,
     })
 
-    logger.Info("✅ Application started")
-    logger.Info("🌐 Server listening on %s:%d", "localhost", 8080)
-    logger.Warn("⚠️ Memory usage is high")
-    logger.Error("❌ Database connection failed: %v", err)
+	logger.Trace("🚀 Starting application...")
+	logger.Debug("📝 Configuration loaded from %s", "config.yaml")
+	logger.Info("🌐 Server listening on %s:%d", "localhost", 8080)
+	logger.Warn("⚠️ Memory usage is high: %.1f%%", 85.5)
+	logger.Error("❌ Failed to connect to database: %s", "postgres")
+	logger.Crit("❌ Unable to initialize application: %v", err)
 }
 ```
 
@@ -50,9 +51,9 @@ func main() {
 The logger automatically formats output with timestamps, caller information, and colors:
 
 ```
-2026-07-04 15:49:40.404 +07:00                 Info()       global.go:20    | INFO  | ✅ Application started successfully
+2026-07-04 15:49:40.404 +07:00                 Info()       global.go:20    | INFO  | ✅ Application started
 2026-07-04 15:49:40.404 +07:00                 Info()       global.go:20    | INFO  | 🌐 Server listening on localhost:8080
-2026-07-04 15:49:40.405 +07:00                 Warn()       global.go:25    | WARN  | ⚠️ Memory usage: 85.50%
+2026-07-04 15:49:40.405 +07:00                 Warn()       global.go:25    | WARN  | ⚠️ Memory usage is high 85.5
 ```
 
 ## Configuration
@@ -98,8 +99,7 @@ logger.Debug("Debug information")
 logger.Info("General informational messages")
 logger.Warn("Warning messages")
 logger.Error("Error messages")
-logger.Fatal("Fatal errors (exits after logging)")
-logger.Panic("Panic conditions (panics after logging)")
+logger.Crit("Critical errors (exits after logging)")
 ```
 
 ## Formatters
@@ -213,8 +213,7 @@ Colors are automatically applied to console output:
 - **INFO** - Green
 - **WARN** - Yellow
 - **ERROR** - Red
-- **FATAL** - Bright Red
-- **PANIC** - Red Background
+- **CRIT** - Bright Red
 
 Colors are automatically stripped when writing to files.
 
@@ -223,7 +222,7 @@ Colors are automatically stripped when writing to files.
 ```
 Application
     ↓
-Logger API (Trace, Debug, Info, Warn, Error, Fatal, Panic)
+Logger API (Trace, Debug, Info, Warn, Error, Crit)
     ↓
 Core Engine
     ↓

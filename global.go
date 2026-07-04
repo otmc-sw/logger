@@ -30,14 +30,9 @@ func Error(format string, args ...any) {
 	global.Error(format, args...)
 }
 
-// Fatal logs a fatal message using the global logger and exits
-func Fatal(format string, args ...any) {
-	global.Fatal(format, args...)
-}
-
-// Panic logs a panic message using the global logger and panics
-func Panic(format string, args ...any) {
-	global.Panic(format, args...)
+// Crit logs a critical message using the global logger and exits
+func Crit(format string, args ...any) {
+	global.Crit(format, args...)
 }
 
 // Sync flushes the global logger

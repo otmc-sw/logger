@@ -25,9 +25,11 @@ func NewPrettyFormatter(colorize bool) internal.Formatter {
 func (f *PrettyFormatter) Format(entry internal.Entry) string {
 	timestamp := entry.Time.Format("2006-01-02 15:04:05.000 -07:00")
 	levelStr := entry.Level.String()
+	message := entry.Message
 
 	if f.colorize {
 		levelStr = internal.ColorLevel(levelStr)
+		message = internal.ColorMessage(levelStr, message)
 	}
 
 	return fmt.Sprintf(
@@ -37,6 +39,6 @@ func (f *PrettyFormatter) Format(entry internal.Entry) string {
 		entry.File,
 		entry.Line,
 		levelStr,
-		entry.Message,
+		message,
 	)
 }

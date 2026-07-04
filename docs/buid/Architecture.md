@@ -132,8 +132,7 @@ logger.Debug(...)
 logger.Info(...)
 logger.Warn(...)
 logger.Error(...)
-logger.Fatal(...)
-logger.Panic(...)​
+logger.Crit(...)​
 ```
 
 ## Configuration

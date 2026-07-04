@@ -22,8 +22,7 @@ const (
 	InfoLevel
 	WarnLevel
 	ErrorLevel
-	FatalLevel
-	PanicLevel
+	CritLevel
 )
 
 // String returns the string representation of the level
@@ -39,10 +38,8 @@ func (l Level) String() string {
 		return "WARN"
 	case ErrorLevel:
 		return "ERROR"
-	case FatalLevel:
-		return "FATAL"
-	case PanicLevel:
-		return "PANIC"
+	case CritLevel:
+		return "CRIT"
 	default:
 		return "UNKNOWN"
 	}
@@ -154,12 +151,9 @@ func (c *Core) Log(level Level, format string, args ...any) {
 		_ = hook.Fire(entry)
 	}
 
-	// Handle fatal and panic
-	if level == FatalLevel {
+	// Handle crit
+	if level == CritLevel {
 		osExit(1)
-	}
-	if level == PanicLevel {
-		panic(message)
 	}
 }
 
