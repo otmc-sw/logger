@@ -5,7 +5,9 @@
 **/
 package logger
 
+import (
+	"github.com/otmc-sw/logger/internal"
+)
+
 // Formatter is the interface for formatting log entries
-type Formatter interface {
-	Format(entry Entry) string
-}
+type Formatter = internal.Formatter

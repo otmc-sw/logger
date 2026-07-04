@@ -3,7 +3,7 @@
  * @Copyright (c) 2026 OTMC Softwares. OTMC Golang Logger.
  * @Contributors Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
 **/
-package logger
+package internal
 
 import (
 	"strings"
@@ -21,8 +21,8 @@ const (
 	colorRedBg     = "\033[41m"
 )
 
-// colorLevel returns the colored level string
-func colorLevel(level string) string {
+// ColorLevel returns the colored level string
+func ColorLevel(level string) string {
 	switch level {
 	case "TRACE":
 		return colorGray + " TRACE " + colorReset
@@ -43,8 +43,8 @@ func colorLevel(level string) string {
 	}
 }
 
-// stripColorCodes removes ANSI color codes from a string
-func stripColorCodes(s string) string {
+// StripColorCodes removes ANSI color codes from a string
+func StripColorCodes(s string) string {
 	s = strings.ReplaceAll(s, colorReset, "")
 	s = strings.ReplaceAll(s, colorGray, "")
 	s = strings.ReplaceAll(s, colorBlue, "")

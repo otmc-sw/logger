@@ -5,7 +5,9 @@
 **/
 package logger
 
+import (
+	"github.com/otmc-sw/logger/internal"
+)
+
 // Hook is the interface for log hooks
-type Hook interface {
-	Fire(entry Entry) error
-}
+type Hook = internal.Hook

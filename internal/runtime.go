@@ -3,7 +3,7 @@
  * @Copyright (c) 2026 OTMC Softwares. OTMC Golang Logger.
  * @Contributors Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
 **/
-package logger
+package internal
 
 import (
 	"path/filepath"
@@ -11,8 +11,15 @@ import (
 	"strings"
 )
 
-// getCaller retrieves caller information from the runtime
-func getCaller(skip int) CallerInfo {
+// CallerInfo holds information about the caller
+type CallerInfo struct {
+	Function string
+	File     string
+	Line     int
+}
+
+// GetCaller retrieves caller information from the runtime
+func GetCaller(skip int) CallerInfo {
 	pc, file, line, ok := runtime.Caller(skip)
 	if !ok {
 		return CallerInfo{
@@ -33,11 +40,4 @@ func getCaller(skip int) CallerInfo {
 		File:     filepath.Base(file),
 		Line:     line,
 	}
-}
-
-// CallerInfo holds information about the caller
-type CallerInfo struct {
-	Function string
-	File     string
-	Line     int
 }

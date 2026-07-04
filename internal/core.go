@@ -11,13 +11,56 @@ import (
 	"os"
 	"sync"
 	"time"
-
-	"github.com/otmc-sw/logger"
 )
+
+// Level represents the severity level of a log entry
+type Level int
+
+const (
+	TraceLevel Level = iota
+	DebugLevel
+	InfoLevel
+	WarnLevel
+	ErrorLevel
+	FatalLevel
+	PanicLevel
+)
+
+// String returns the string representation of the level
+func (l Level) String() string {
+	switch l {
+	case TraceLevel:
+		return "TRACE"
+	case DebugLevel:
+		return "DEBUG"
+	case InfoLevel:
+		return "INFO"
+	case WarnLevel:
+		return "WARN"
+	case ErrorLevel:
+		return "ERROR"
+	case FatalLevel:
+		return "FATAL"
+	case PanicLevel:
+		return "PANIC"
+	default:
+		return "UNKNOWN"
+	}
+}
+
+// Entry represents a log entry
+type Entry struct {
+	Time     time.Time
+	Level    Level
+	Function string
+	File     string
+	Line     int
+	Message  string
+}
 
 // Formatter is the interface for formatting log entries
 type Formatter interface {
-	Format(entry logger.Entry) string
+	Format(entry Entry) string
 }
 
 // Writer is the interface for writing log output
@@ -28,13 +71,13 @@ type Writer interface {
 
 // Hook is the interface for log hooks
 type Hook interface {
-	Fire(entry logger.Entry) error
+	Fire(entry Entry) error
 }
 
 // Core is the core logger implementation
 type Core struct {
 	mu        sync.Mutex
-	level     logger.Level
+	level     Level
 	enabled   bool
 	caller    bool
 	formatter Formatter
@@ -43,7 +86,7 @@ type Core struct {
 }
 
 // NewCore creates a new core logger
-func NewCore(level logger.Level, caller bool, formatter Formatter, writer Writer) *Core {
+func NewCore(level Level, caller bool, formatter Formatter, writer Writer) *Core {
 	return &Core{
 		level:     level,
 		enabled:   true,
@@ -55,7 +98,7 @@ func NewCore(level logger.Level, caller bool, formatter Formatter, writer Writer
 }
 
 // SetLevel sets the log level
-func (c *Core) SetLevel(level logger.Level) {
+func (c *Core) SetLevel(level Level) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	c.level = level
@@ -76,7 +119,7 @@ func (c *Core) AddHook(hook Hook) {
 }
 
 // Log logs a message at the specified level
-func (c *Core) Log(level logger.Level, format string, args ...any) {
+func (c *Core) Log(level Level, format string, args ...any) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -86,7 +129,7 @@ func (c *Core) Log(level logger.Level, format string, args ...any) {
 
 	message := fmt.Sprintf(format, args...)
 
-	var entry logger.Entry
+	var entry Entry
 	entry.Time = time.Now()
 	entry.Level = level
 	entry.Message = message
@@ -112,10 +155,10 @@ func (c *Core) Log(level logger.Level, format string, args ...any) {
 	}
 
 	// Handle fatal and panic
-	if level == logger.FatalLevel {
+	if level == FatalLevel {
 		osExit(1)
 	}
-	if level == logger.PanicLevel {
+	if level == PanicLevel {
 		panic(message)
 	}
 }

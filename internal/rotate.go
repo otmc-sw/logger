@@ -3,7 +3,7 @@
  * @Copyright (c) 2026 OTMC Softwares. OTMC Golang Logger.
  * @Contributors Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
 **/
-package logger
+package internal
 
 import (
 	"gopkg.in/natefinch/lumberjack.v2"

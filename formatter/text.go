@@ -3,21 +3,23 @@
  * @Copyright (c) 2026 OTMC Softwares. OTMC Golang Logger.
  * @Contributors Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
 **/
-package logger
+package formatter
 
 import (
 	"fmt"
+
+	"github.com/otmc-sw/logger/internal"
 )
 
 // TextFormatter formats log entries in simple text format
 type TextFormatter struct{}
 
 // NewTextFormatter creates a new text formatter
-func NewTextFormatter() Formatter {
+func NewTextFormatter() internal.Formatter {
 	return &TextFormatter{}
 }
 
 // Format formats a log entry
-func (f *TextFormatter) Format(entry Entry) string {
+func (f *TextFormatter) Format(entry internal.Entry) string {
 	return fmt.Sprintf("%s %s\n", entry.Level.String(), entry.Message)
 }

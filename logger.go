@@ -5,6 +5,11 @@
 **/
 package logger
 
+import (
+	"github.com/otmc-sw/logger/formatter"
+	"github.com/otmc-sw/logger/internal"
+)
+
 var global Logger = New()
 
 // Logger is the public logging interface
@@ -21,7 +26,7 @@ type Logger interface {
 
 // stdLogger is the standard logger implementation
 type stdLogger struct {
-	core *Core
+	core *internal.Core
 }
 
 // New creates a new logger with the given options
@@ -32,23 +37,23 @@ func New(opts ...Option) Logger {
 	}
 
 	// Create formatter
-	var formatter Formatter
+	var fmt internal.Formatter
 	if config.JSON {
-		formatter = NewJSONFormatter()
+		fmt = formatter.NewJSONFormatter()
 	} else {
-		formatter = NewPrettyFormatter(config.Console)
+		fmt = formatter.NewPrettyFormatter(config.Console)
 	}
 
 	// Create writer
-	var writer Writer
-	var writers []Writer
+	var writer internal.Writer
+	var writers []internal.Writer
 
 	if config.Console {
-		writers = append(writers, NewConsoleWriter(nil))
+		writers = append(writers, internal.NewConsoleWriter(nil))
 	}
 
 	if config.File && config.Filename != "" {
-		rotateWriter := NewRotateWriter(
+		rotateWriter := internal.NewRotateWriter(
 			config.Filename,
 			config.MaxSize,
 			config.MaxBackups,
@@ -62,11 +67,11 @@ func New(opts ...Option) Logger {
 		if len(writers) == 1 {
 			writer = writers[0]
 		} else {
-			writer = NewMultiWriter(writers...)
+			writer = internal.NewMultiWriter(writers...)
 		}
 	}
 
-	core := NewCore(config.Level, config.Caller, formatter, writer)
+	core := internal.NewCore(config.Level, config.Caller, fmt, writer)
 
 	return &stdLogger{core: core}
 }
@@ -88,37 +93,37 @@ func Init(config Config) {
 
 // Trace logs a trace message
 func (l *stdLogger) Trace(format string, args ...any) {
-	l.core.Log(TraceLevel, format, args...)
+	l.core.Log(internal.TraceLevel, format, args...)
 }
 
 // Debug logs a debug message
 func (l *stdLogger) Debug(format string, args ...any) {
-	l.core.Log(DebugLevel, format, args...)
+	l.core.Log(internal.DebugLevel, format, args...)
 }
 
 // Info logs an info message
 func (l *stdLogger) Info(format string, args ...any) {
-	l.core.Log(InfoLevel, format, args...)
+	l.core.Log(internal.InfoLevel, format, args...)
 }
 
 // Warn logs a warning message
 func (l *stdLogger) Warn(format string, args ...any) {
-	l.core.Log(WarnLevel, format, args...)
+	l.core.Log(internal.WarnLevel, format, args...)
 }
 
 // Error logs an error message
 func (l *stdLogger) Error(format string, args ...any) {
-	l.core.Log(ErrorLevel, format, args...)
+	l.core.Log(internal.ErrorLevel, format, args...)
 }
 
 // Fatal logs a fatal message and exits
 func (l *stdLogger) Fatal(format string, args ...any) {
-	l.core.Log(FatalLevel, format, args...)
+	l.core.Log(internal.FatalLevel, format, args...)
 }
 
 // Panic logs a panic message and panics
 func (l *stdLogger) Panic(format string, args ...any) {
-	l.core.Log(PanicLevel, format, args...)
+	l.core.Log(internal.PanicLevel, format, args...)
 }
 
 // Sync flushes the logger

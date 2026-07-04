@@ -3,10 +3,12 @@
  * @Copyright (c) 2026 OTMC Softwares. OTMC Golang Logger.
  * @Contributors Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
 **/
-package logger
+package formatter
 
 import (
 	"fmt"
+
+	"github.com/otmc-sw/logger/internal"
 )
 
 // PrettyFormatter formats log entries in a pretty console format
@@ -15,17 +17,17 @@ type PrettyFormatter struct {
 }
 
 // NewPrettyFormatter creates a new pretty formatter
-func NewPrettyFormatter(colorize bool) Formatter {
+func NewPrettyFormatter(colorize bool) internal.Formatter {
 	return &PrettyFormatter{colorize: colorize}
 }
 
 // Format formats a log entry
-func (f *PrettyFormatter) Format(entry Entry) string {
+func (f *PrettyFormatter) Format(entry internal.Entry) string {
 	timestamp := entry.Time.Format("2006-01-02 15:04:05.000 -07:00")
 	levelStr := entry.Level.String()
 
 	if f.colorize {
-		levelStr = colorLevel(levelStr)
+		levelStr = internal.ColorLevel(levelStr)
 	}
 
 	return fmt.Sprintf(

@@ -9,19 +9,19 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/otmc-sw/logger"
+	"github.com/otmc-sw/logger/internal"
 )
 
 // JSONFormatter formats log entries as JSON
 type JSONFormatter struct{}
 
 // NewJSONFormatter creates a new JSON formatter
-func NewJSONFormatter() *JSONFormatter {
+func NewJSONFormatter() internal.Formatter {
 	return &JSONFormatter{}
 }
 
 // Format formats a log entry
-func (f *JSONFormatter) Format(entry logger.Entry) string {
+func (f *JSONFormatter) Format(entry internal.Entry) string {
 	data := map[string]interface{}{
 		"time":     entry.Time.Format(time.RFC3339Nano),
 		"level":    entry.Level.String(),
