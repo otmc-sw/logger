@@ -4,18 +4,7 @@
 # Contributors: Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
 #
 
-# IDEs
-.idea/
-.vscode/
-
-# Cache
-logs/
-cache/
-data/
-tmp/
-build/
-bin/
-*.exe
-*.log
-
-
+Set-Location $PSScriptRoot/..
+git add .
+git commit -m "Improve: Update files."
+git push
