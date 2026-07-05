@@ -23,12 +23,12 @@ func file() {
 		Caller:   true,
 	})
 
-	logger.Trace("ðŸ” This is a trace message")
-	logger.Debug("ðŸ› Debugging information")
-	logger.Info("âœ… Application started successfully")
-	logger.Warn("âš ï¸ This is a warning message")
-	logger.Error("âŒ An error occurred")
-	logger.Info("ðŸŽ‰ All done!")
+	logger.Trace("🔍 This is a trace message")
+	logger.Debug("👽 Debugging information")
+	logger.Info("✅ Application started successfully")
+	logger.Warn("⚠️ This is a warning message")
+	logger.Error("❌ An error occurred")
+	logger.Info("🎉 All done!")
 	_ = logger.Sync()
 }
 
