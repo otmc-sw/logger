@@ -184,14 +184,6 @@ func (c *Core) LogRequest(req Request) {
 	if c.writer != nil {
 		_, _ = c.writer.Write([]byte(formatted))
 	}
-
-	// Execute hooks
-	for _, hook := range c.hooks {
-		var entry Entry
-		entry.Time = req.Time
-		entry.Message = req.Method + " " + req.Path
-		_ = hook.Fire(entry)
-	}
 }
 
 // Sync flushes any buffered log entries

@@ -7,6 +7,8 @@ package formatter
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/otmc-sw/logger/internal"
 )
@@ -47,36 +49,36 @@ func (f *PrettyFormatter) Format(entry internal.Entry) string {
 func (f *PrettyFormatter) FormatRequest(req internal.Request) string {
 	timestamp := req.Time.Format("15:04:05.000")
 	latency := req.Latency.String()
-	
+	method := req.Method
+	statusCodeStr := strconv.Itoa(req.StatusCode)
+
 	if f.colorize {
 		timestamp = internal.ColorTime(timestamp)
 		latency = internal.ColorTime(latency)
+		method = internal.ColorMethod(method)
+		statusCodeStr = internal.ColorStatusCode(req.StatusCode)
 	}
 
-	method := req.Method
-	statusCode := req.StatusCode
-	
-	if f.colorize {
-		method = internal.ColorMethod(method)
-		statusCodeStr := internal.ColorStatusCode(statusCode)
-		return fmt.Sprintf(
-			"%s | %s | %s | %s | %s | %s\n",
-			timestamp,
-			method,
-			latency,
-			statusCodeStr,
-			req.ClientIP,
-			req.Path,
-		)
-	}
-	
+	latencyField := padString(latency, 8)
+	statusField := padString(statusCodeStr, 4)
+
 	return fmt.Sprintf(
-		"%s | %s | %s | %d | %s | %s\n",
+		"%s |%s| %s | %s | %-15s | %s\n",
 		timestamp,
 		method,
-		latency,
-		statusCode,
+		latencyField,
+		statusField,
 		req.ClientIP,
 		req.Path,
 	)
+}
+
+// padString pads a string with trailing spaces to the specified visible width,
+// accounting for invisible ANSI color codes.
+func padString(s string, width int) string {
+	visible := internal.StripColorCodes(s)
+	if len(visible) >= width {
+		return s
+	}
+	return s + strings.Repeat(" ", width-len(visible))
 }

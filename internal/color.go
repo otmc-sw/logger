@@ -12,35 +12,65 @@ import (
 
 // ANSI color codes
 const (
-	colorReset      = "\033[0m"
-	colorWhiteBg    = "\033[47m"
-	colorCyanBg     = "\033[46m"
-	colorBlueBg     = "\033[44m"
-	colorYellowBg   = "\033[43m"
-	colorRedBg      = "\033[41m"
-	colorLightRedBg = "\033[101m"
-	colorRed        = "\033[31m"
-	colorYellow     = "\033[33m"
-	colorGreen      = "\033[32m"
-	colorPurple     = "\033[35m"
-	colorWhite      = "\033[37m"
+	// Reset
+	ColorReset = "\033[0m"
+
+	// =========================
+	// Foreground Colors
+	// =========================
+	ColorBlack  = "\033[30m"
+	ColorRed    = "\033[31m"
+	ColorGreen  = "\033[32m"
+	ColorYellow = "\033[33m"
+	ColorBlue   = "\033[34m"
+	ColorCyan   = "\033[36m"
+	ColorWhite  = "\033[37m"
+
+	// Bright Foreground Colors
+	ColorBrightBlack  = "\033[90m" // Gray
+	ColorBrightRed    = "\033[91m"
+	ColorBrightGreen  = "\033[92m"
+	ColorBrightYellow = "\033[93m"
+	ColorBrightBlue   = "\033[94m"
+	ColorBrightCyan   = "\033[96m"
+	ColorBrightWhite  = "\033[97m"
+
+	// =========================
+	// Background Colors
+	// =========================
+	ColorBlackBg  = "\033[40m"
+	ColorRedBg    = "\033[41m"
+	ColorGreenBg  = "\033[42m"
+	ColorYellowBg = "\033[43m"
+	ColorBlueBg   = "\033[44m"
+	ColorCyanBg   = "\033[46m"
+	ColorWhiteBg  = "\033[47m"
+
+	// Bright Background Colors
+	ColorBrightBlackBg  = "\033[100m" // Gray
+	ColorBrightRedBg    = "\033[101m"
+	ColorBrightGreenBg  = "\033[102m"
+	ColorBrightYellowBg = "\033[103m"
+	ColorBrightBlueBg   = "\033[104m"
+	ColorBrightCyanBg   = "\033[106m"
+	ColorBrightWhiteBg  = "\033[107m"
 )
 
 // ColorLevel returns the colored level string
 func ColorLevel(level string) string {
 	switch level {
 	case "TRACE":
-		return colorWhiteBg + " TRACE " + colorReset
+		return ColorWhiteBg + " TRACE " + ColorReset
 	case "DEBUG":
-		return colorCyanBg + " DEBUG " + colorReset
+		return ColorCyanBg + " DEBUG " + ColorReset
 	case "INFO":
-		return colorBlueBg + " INFO  " + colorReset
+		return ColorBlueBg + " INFO  " + ColorReset
 	case "WARN":
-		return colorYellowBg + " WARN  " + colorReset
+		return ColorYellowBg + " WARN  " + ColorReset
 	case "ERROR":
-		return colorRedBg + " ERROR " + colorReset
+		return ColorRedBg + " ERROR " + ColorReset
 	case "CRIT":
-		return colorLightRedBg + " CRIT  " + colorReset
+		return ColorBrightRedBg + " CRIT  " + ColorReset
 	default:
 		return "UNKNOWN"
 	}
@@ -48,18 +78,18 @@ func ColorLevel(level string) string {
 
 // StripColorCodes removes ANSI color codes from a string
 func StripColorCodes(s string) string {
-	s = strings.ReplaceAll(s, colorReset, "")
-	s = strings.ReplaceAll(s, colorWhiteBg, "")
-	s = strings.ReplaceAll(s, colorCyanBg, "")
-	s = strings.ReplaceAll(s, colorBlueBg, "")
-	s = strings.ReplaceAll(s, colorYellowBg, "")
-	s = strings.ReplaceAll(s, colorRedBg, "")
-	s = strings.ReplaceAll(s, colorLightRedBg, "")
-	s = strings.ReplaceAll(s, colorRed, "")
-	s = strings.ReplaceAll(s, colorYellow, "")
-	s = strings.ReplaceAll(s, colorGreen, "")
-	s = strings.ReplaceAll(s, colorPurple, "")
-	s = strings.ReplaceAll(s, colorWhite, "")
+	s = strings.ReplaceAll(s, ColorReset, "")
+	s = strings.ReplaceAll(s, ColorWhiteBg, "")
+	s = strings.ReplaceAll(s, ColorCyanBg, "")
+	s = strings.ReplaceAll(s, ColorBlueBg, "")
+	s = strings.ReplaceAll(s, ColorYellowBg, "")
+	s = strings.ReplaceAll(s, ColorRedBg, "")
+	s = strings.ReplaceAll(s, ColorBrightRedBg, "")
+	s = strings.ReplaceAll(s, ColorRed, "")
+	s = strings.ReplaceAll(s, ColorYellow, "")
+	s = strings.ReplaceAll(s, ColorGreen, "")
+	s = strings.ReplaceAll(s, ColorWhite, "")
+	s = strings.ReplaceAll(s, ColorBlack, "")
 	return s
 }
 
@@ -67,35 +97,35 @@ func StripColorCodes(s string) string {
 func ColorMessage(level string, message string) string {
 	switch level {
 	case "WARN":
-		return colorYellow + message + colorReset
+		return ColorYellow + message + ColorReset
 	case "ERROR":
-		return colorRed + message + colorReset
+		return ColorRed + message + ColorReset
 	case "CRIT":
-		return colorRed + message + colorReset
+		return ColorBrightRed + message + ColorReset
 	default:
 		return message
 	}
 }
 
-// ColorMethod returns the colored HTTP method
+// ColorMethod returns the colored HTTP method with background color
 func ColorMethod(method string) string {
 	switch method {
 	case "GET":
-		return colorBlueBg + " " + method + " " + colorReset
+		return ColorBlueBg   + "   GET  " + ColorReset
 	case "POST":
-		return colorGreen + method + colorReset
+		return ColorGreen    + "  POST  " + ColorReset
 	case "PUT":
-		return colorYellow + method + colorReset
+		return ColorYellowBg + "   PUT  " + ColorReset
 	case "DELETE":
-		return colorRed + method + colorReset
+		return ColorRedBg    + " DELETE " + ColorReset
 	case "PATCH":
-		return colorPurple + method + colorReset
+		return ColorCyanBg   + "  PATCH " + ColorReset
 	case "OPTIONS":
-		return colorWhite + method + colorReset
+		return ColorWhiteBg  + " OPTIONS" + ColorReset
 	case "HEAD":
-		return colorWhite + method + colorReset
+		return ColorWhiteBg  + " HEAD   " + ColorReset
 	default:
-		return method
+		return ColorWhiteBg  + " UNKNOWN" + ColorReset
 	}
 }
 
@@ -103,13 +133,13 @@ func ColorMethod(method string) string {
 func ColorStatusCode(code int) string {
 	switch {
 	case code >= 500:
-		return colorRed + fmt.Sprintf("%d", code) + colorReset
+		return ColorRed + fmt.Sprintf("%d", code) + ColorReset
 	case code >= 400:
-		return colorRed + fmt.Sprintf("%d", code) + colorReset
+		return ColorRed + fmt.Sprintf("%d", code) + ColorReset
 	case code >= 300:
-		return colorYellow + fmt.Sprintf("%d", code) + colorReset
+		return ColorYellow + fmt.Sprintf("%d", code) + ColorReset
 	case code >= 200:
-		return colorGreen + fmt.Sprintf("%d", code) + colorReset
+		return ColorGreen + fmt.Sprintf("%d", code) + ColorReset
 	default:
 		return fmt.Sprintf("%d", code)
 	}
@@ -117,5 +147,5 @@ func ColorStatusCode(code int) string {
 
 // ColorTime returns the colored time string
 func ColorTime(timeStr string) string {
-	return colorPurple + timeStr + colorReset
+	return ColorCyan + timeStr + ColorReset
 }
