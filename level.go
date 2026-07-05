@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @License Apache License 2.0
  * @Copyright (c) 2026 OTMC Softwares. OTMC Golang Logger.
  * @Contributors Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
@@ -9,7 +9,6 @@ import (
 	"github.com/otmc-sw/logger/internal"
 )
 
-// Level is the log level type
 type Level = internal.Level
 
 const (
@@ -21,7 +20,6 @@ const (
 	CritLevel  = internal.CritLevel
 )
 
-// ParseLevel parses a string level and returns the Level constant
 func ParseLevel(level string) Level {
 	switch level {
 	case "TRACE":

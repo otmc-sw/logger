@@ -1,7 +1,7 @@
 ﻿/**
- * @License Apache License 2.0
- * @Copyright (c) 2026 OTMC Softwares. OTMC Golang Logger.
- * @Contributors Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
+ * @License Apache License 2.0
+ * @Copyright (c) 2026 OTMC Softwares. OTMC Golang Logger.
+ * @Contributors Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
 **/
 package loggers
 
@@ -28,20 +28,20 @@ const (
 	TRACE
 )
 
-const defaultMaxSize = 5 * 1024 * 1024 // 5MB
+const defaultMaxSize = 5 * 1024 * 1024
 
 const (
 	colorReset = "\033[0m"
 
-	colorCrit  = "\033[101m" // Light red background
-	colorError = "\033[41m"  // Red background
-	colorWarn  = "\033[43m"  // Yellow background
-	colorInfo  = "\033[44m"  // Blue background
-	colorDebug = "\033[46m"  // Cyan background
-	colorTrace = "\033[47m"  // White background
+	colorCrit  = "\033[101m"
+	colorError = "\033[41m"
+	colorWarn  = "\033[43m"
+	colorInfo  = "\033[44m"
+	colorDebug = "\033[46m"
+	colorTrace = "\033[47m"
 
-	colorErrorText = "\033[31m" // Red text
-	colorWarnText  = "\033[33m" // Yellow text
+	colorErrorText = "\033[31m"
+	colorWarnText  = "\033[33m"
 )
 
 type Logger struct {

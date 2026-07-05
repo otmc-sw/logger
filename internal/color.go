@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @License Apache License 2.0
  * @Copyright (c) 2026 OTMC Softwares. OTMC Golang Logger.
  * @Contributors Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
@@ -10,14 +10,9 @@ import (
 	"strings"
 )
 
-// ANSI color codes
 const (
-	// Reset
 	ColorReset = "\033[0m"
 
-	// =========================
-	// Foreground Colors
-	// =========================
 	ColorBlack  = "\033[30m"
 	ColorRed    = "\033[31m"
 	ColorGreen  = "\033[32m"
@@ -26,8 +21,7 @@ const (
 	ColorCyan   = "\033[36m"
 	ColorWhite  = "\033[37m"
 
-	// Bright Foreground Colors
-	ColorBrightBlack  = "\033[90m" // Gray
+	ColorBrightBlack  = "\033[90m"
 	ColorBrightRed    = "\033[91m"
 	ColorBrightGreen  = "\033[92m"
 	ColorBrightYellow = "\033[93m"
@@ -35,9 +29,6 @@ const (
 	ColorBrightCyan   = "\033[96m"
 	ColorBrightWhite  = "\033[97m"
 
-	// =========================
-	// Background Colors
-	// =========================
 	ColorBlackBg  = "\033[40m"
 	ColorRedBg    = "\033[41m"
 	ColorGreenBg  = "\033[42m"
@@ -46,8 +37,7 @@ const (
 	ColorCyanBg   = "\033[46m"
 	ColorWhiteBg  = "\033[47m"
 
-	// Bright Background Colors
-	ColorBrightBlackBg  = "\033[100m" // Gray
+	ColorBrightBlackBg  = "\033[100m"
 	ColorBrightRedBg    = "\033[101m"
 	ColorBrightGreenBg  = "\033[102m"
 	ColorBrightYellowBg = "\033[103m"
@@ -56,7 +46,6 @@ const (
 	ColorBrightWhiteBg  = "\033[107m"
 )
 
-// ColorLevel returns the colored level string
 func ColorLevel(level string) string {
 	switch level {
 	case "TRACE":
@@ -76,7 +65,6 @@ func ColorLevel(level string) string {
 	}
 }
 
-// StripColorCodes removes ANSI color codes from a string
 func StripColorCodes(s string) string {
 	s = strings.ReplaceAll(s, ColorReset, "")
 	s = strings.ReplaceAll(s, ColorWhiteBg, "")
@@ -93,7 +81,6 @@ func StripColorCodes(s string) string {
 	return s
 }
 
-// ColorMessage returns the colored message string based on level
 func ColorMessage(level string, message string) string {
 	switch level {
 	case "WARN":
@@ -107,7 +94,6 @@ func ColorMessage(level string, message string) string {
 	}
 }
 
-// ColorMethod returns the colored HTTP method with background color
 func ColorMethod(method string) string {
 	formattedMethod := fmt.Sprintf("%-7s", method)
 	switch method {
@@ -130,7 +116,6 @@ func ColorMethod(method string) string {
 	}
 }
 
-// ColorStatusCode returns the colored HTTP status code
 func ColorStatusCode(code int) string {
 	switch {
 	case code >= 500:
@@ -146,12 +131,10 @@ func ColorStatusCode(code int) string {
 	}
 }
 
-// ColorTime returns the colored time string
 func ColorTime(timeStr string) string {
 	return ColorCyan + fmt.Sprintf("%6s", timeStr) + ColorReset
 }
 
-// ColorLatency returns the colored latency string
 func ColorLatency(latency string) string {
 	return ColorBlue + fmt.Sprintf("%6s", latency) + ColorReset
 }

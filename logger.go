@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @License Apache License 2.0
  * @Copyright (c) 2026 OTMC Softwares. OTMC Golang Logger.
  * @Contributors Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
@@ -14,7 +14,6 @@ import (
 
 var global Logger = New()
 
-// Logger is the public logging interface
 type Logger interface {
 	Trace(format string, args ...any)
 	Debug(format string, args ...any)
@@ -26,19 +25,16 @@ type Logger interface {
 	Sync() error
 }
 
-// stdLogger is the standard logger implementation
 type stdLogger struct {
 	core *internal.Core
 }
 
-// New creates a new logger with the given options
 func New(opts ...Option) Logger {
 	config := DefaultConfig()
 	for _, opt := range opts {
 		opt(&config)
 	}
 
-	// Create formatter
 	var fmt internal.Formatter
 	if config.JSON {
 		fmt = formatter.NewJSONFormatter()
@@ -46,7 +42,6 @@ func New(opts ...Option) Logger {
 		fmt = formatter.NewPrettyFormatter(config.Console)
 	}
 
-	// Create writer
 	var writer internal.Writer
 	var writers []internal.Writer
 
@@ -78,7 +73,6 @@ func New(opts ...Option) Logger {
 	return &stdLogger{core: core}
 }
 
-// Init initializes the global logger
 func Init(config Config) {
 	global = New(
 		WithLevel(config.Level),
@@ -93,37 +87,30 @@ func Init(config Config) {
 	)
 }
 
-// Trace logs a trace message
 func (l *stdLogger) Trace(format string, args ...any) {
 	l.core.Log(internal.TraceLevel, 4, format, args...)
 }
 
-// Debug logs a debug message
 func (l *stdLogger) Debug(format string, args ...any) {
 	l.core.Log(internal.DebugLevel, 4, format, args...)
 }
 
-// Info logs an info message
 func (l *stdLogger) Info(format string, args ...any) {
 	l.core.Log(internal.InfoLevel, 4, format, args...)
 }
 
-// Warn logs a warning message
 func (l *stdLogger) Warn(format string, args ...any) {
 	l.core.Log(internal.WarnLevel, 4, format, args...)
 }
 
-// Error logs an error message
 func (l *stdLogger) Error(format string, args ...any) {
 	l.core.Log(internal.ErrorLevel, 4, format, args...)
 }
 
-// Crit logs a critical message and exits
 func (l *stdLogger) Crit(format string, args ...any) {
 	l.core.Log(internal.CritLevel, 4, format, args...)
 }
 
-// Request logs an HTTP request
 func (l *stdLogger) Request(method, path string, statusCode int, latency time.Duration, clientIP string) {
 	req := internal.Request{
 		Time:       time.Now(),
@@ -133,11 +120,10 @@ func (l *stdLogger) Request(method, path string, statusCode int, latency time.Du
 		Latency:    latency,
 		ClientIP:   clientIP,
 	}
-	
+
 	l.core.LogRequest(req)
 }
 
-// Sync flushes the logger
 func (l *stdLogger) Sync() error {
 	return l.core.Sync()
 }
