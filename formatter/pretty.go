@@ -8,7 +8,6 @@ package formatter
 import (
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/otmc-sw/logger/internal"
 )
@@ -54,31 +53,18 @@ func (f *PrettyFormatter) FormatRequest(req internal.Request) string {
 
 	if f.colorize {
 		timestamp = internal.ColorTime(timestamp)
-		latency = internal.ColorTime(latency)
+		latency = internal.ColorLatency(latency)
 		method = internal.ColorMethod(method)
 		statusCodeStr = internal.ColorStatusCode(req.StatusCode)
 	}
 
-	latencyField := padString(latency, 8)
-	statusField := padString(statusCodeStr, 4)
-
 	return fmt.Sprintf(
-		"%s |%s| %s | %s | %-15s | %s\n",
+		"%s |%s| %s | %s | %-12s | %s\n",
 		timestamp,
 		method,
-		latencyField,
-		statusField,
+		latency,
+		statusCodeStr,
 		req.ClientIP,
 		req.Path,
 	)
-}
-
-// padString pads a string with trailing spaces to the specified visible width,
-// accounting for invisible ANSI color codes.
-func padString(s string, width int) string {
-	visible := internal.StripColorCodes(s)
-	if len(visible) >= width {
-		return s
-	}
-	return s + strings.Repeat(" ", width-len(visible))
 }

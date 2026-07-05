@@ -109,23 +109,24 @@ func ColorMessage(level string, message string) string {
 
 // ColorMethod returns the colored HTTP method with background color
 func ColorMethod(method string) string {
+	formattedMethod := fmt.Sprintf("%-7s", method)
 	switch method {
 	case "GET":
-		return ColorBlueBg   + "   GET  " + ColorReset
+		return ColorBlueBg + formattedMethod + ColorReset
 	case "POST":
-		return ColorGreen    + "  POST  " + ColorReset
+		return ColorGreenBg + formattedMethod + ColorReset
 	case "PUT":
-		return ColorYellowBg + "   PUT  " + ColorReset
+		return ColorYellowBg + formattedMethod + ColorReset
 	case "DELETE":
-		return ColorRedBg    + " DELETE " + ColorReset
+		return ColorRedBg + formattedMethod + ColorReset
 	case "PATCH":
-		return ColorCyanBg   + "  PATCH " + ColorReset
+		return ColorCyanBg + formattedMethod + ColorReset
 	case "OPTIONS":
-		return ColorWhiteBg  + " OPTIONS" + ColorReset
+		return ColorWhiteBg + formattedMethod + ColorReset
 	case "HEAD":
-		return ColorWhiteBg  + " HEAD   " + ColorReset
+		return ColorWhiteBg + formattedMethod + ColorReset
 	default:
-		return ColorWhiteBg  + " UNKNOWN" + ColorReset
+		return ColorWhiteBg + formattedMethod + ColorReset
 	}
 }
 
@@ -133,19 +134,24 @@ func ColorMethod(method string) string {
 func ColorStatusCode(code int) string {
 	switch {
 	case code >= 500:
-		return ColorRed + fmt.Sprintf("%d", code) + ColorReset
+		return ColorRed + fmt.Sprintf("%3d", code) + ColorReset
 	case code >= 400:
-		return ColorRed + fmt.Sprintf("%d", code) + ColorReset
+		return ColorRed + fmt.Sprintf("%3d", code) + ColorReset
 	case code >= 300:
-		return ColorYellow + fmt.Sprintf("%d", code) + ColorReset
+		return ColorYellow + fmt.Sprintf("%3d", code) + ColorReset
 	case code >= 200:
-		return ColorGreen + fmt.Sprintf("%d", code) + ColorReset
+		return ColorGreen + fmt.Sprintf("%3d", code) + ColorReset
 	default:
-		return fmt.Sprintf("%d", code)
+		return fmt.Sprintf("%3d", code)
 	}
 }
 
 // ColorTime returns the colored time string
 func ColorTime(timeStr string) string {
-	return ColorCyan + timeStr + ColorReset
+	return ColorCyan + fmt.Sprintf("%6s", timeStr) + ColorReset
+}
+
+// ColorLatency returns the colored latency string
+func ColorLatency(latency string) string {
+	return ColorBlue + fmt.Sprintf("%6s", latency) + ColorReset
 }

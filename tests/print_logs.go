@@ -186,4 +186,6 @@ func testRequest() {
 	logger.Request("GET", "/not-found", 404, 10*time.Millisecond, "127.0.0.1")
 	logger.Request("POST", "/error", 500, 200*time.Millisecond, "192.168.1.50")
 	logger.Request("PUT", "/api/data", 200, 100*time.Millisecond, "172.16.0.100")
+	logger.Request("PATCH", "/api/data", 200, 100*time.Millisecond, "172.16.0.100")
+
 }
