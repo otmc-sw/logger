@@ -42,3 +42,41 @@ func (f *PrettyFormatter) Format(entry internal.Entry) string {
 		message,
 	)
 }
+
+// FormatRequest formats an HTTP request entry
+func (f *PrettyFormatter) FormatRequest(req internal.Request) string {
+	timestamp := req.Time.Format("15:04:05.000")
+	latency := req.Latency.String()
+	
+	if f.colorize {
+		timestamp = internal.ColorTime(timestamp)
+		latency = internal.ColorTime(latency)
+	}
+
+	method := req.Method
+	statusCode := req.StatusCode
+	
+	if f.colorize {
+		method = internal.ColorMethod(method)
+		statusCodeStr := internal.ColorStatusCode(statusCode)
+		return fmt.Sprintf(
+			"%s | %s | %s | %s | %s | %s\n",
+			timestamp,
+			method,
+			latency,
+			statusCodeStr,
+			req.ClientIP,
+			req.Path,
+		)
+	}
+	
+	return fmt.Sprintf(
+		"%s | %s | %s | %d | %s | %s\n",
+		timestamp,
+		method,
+		latency,
+		statusCode,
+		req.ClientIP,
+		req.Path,
+	)
+}

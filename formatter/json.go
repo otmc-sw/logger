@@ -34,3 +34,18 @@ func (f *JSONFormatter) Format(entry internal.Entry) string {
 	b, _ := json.Marshal(data)
 	return string(b) + "\n"
 }
+
+// FormatRequest formats an HTTP request entry
+func (f *JSONFormatter) FormatRequest(req internal.Request) string {
+	data := map[string]interface{}{
+		"time":       req.Time.Format(time.RFC3339Nano),
+		"method":     req.Method,
+		"path":       req.Path,
+		"status":     req.StatusCode,
+		"latency":    req.Latency.String(),
+		"client_ip":  req.ClientIP,
+	}
+
+	b, _ := json.Marshal(data)
+	return string(b) + "\n"
+}

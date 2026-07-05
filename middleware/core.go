@@ -144,16 +144,5 @@ func FastHTTPLoggerWithConfig(config Config) func(fasthttp.RequestHandler) fasth
 
 // writeLog writes a structured HTTP log entry using the logger package.
 func writeLog(requestID, method, path string, statusCode int, latency time.Duration, clientIP string) {
-	logMessage := method + " " + path
-	switch {
-	case statusCode >= 500:
-		logger.Error("[%s] %s | %d | %v | %s",
-			requestID, logMessage, statusCode, latency, clientIP)
-	case statusCode >= 400:
-		logger.Warn("[%s] %s | %d | %v | %s",
-			requestID, logMessage, statusCode, latency, clientIP)
-	default:
-		logger.Info("[%s] %s | %d | %v | %s",
-			requestID, logMessage, statusCode, latency, clientIP)
-	}
+	logger.Request(method, path, statusCode, latency, clientIP)
 }

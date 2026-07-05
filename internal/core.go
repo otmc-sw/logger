@@ -45,7 +45,7 @@ func (l Level) String() string {
 	}
 }
 
-// Entry represents a log entry
+// Entry represents a standard log entry
 type Entry struct {
 	Time     time.Time
 	Level    Level
@@ -55,9 +55,20 @@ type Entry struct {
 	Message  string
 }
 
+// Request represents an HTTP request log entry
+type Request struct {
+	Time       time.Time
+	Method     string
+	Path       string
+	StatusCode int
+	Latency    time.Duration
+	ClientIP   string
+}
+
 // Formatter is the interface for formatting log entries
 type Formatter interface {
 	Format(entry Entry) string
+	FormatRequest(req Request) string
 }
 
 // Writer is the interface for writing log output
@@ -154,6 +165,32 @@ func (c *Core) Log(level Level, skip int, format string, args ...any) {
 	// Handle crit
 	if level == CritLevel {
 		osExit(1)
+	}
+}
+
+// LogRequest logs an HTTP request entry
+func (c *Core) LogRequest(req Request) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	if !c.enabled {
+		return
+	}
+
+	// Format the request
+	formatted := c.formatter.FormatRequest(req)
+
+	// Write to output
+	if c.writer != nil {
+		_, _ = c.writer.Write([]byte(formatted))
+	}
+
+	// Execute hooks
+	for _, hook := range c.hooks {
+		var entry Entry
+		entry.Time = req.Time
+		entry.Message = req.Method + " " + req.Path
+		_ = hook.Fire(entry)
 	}
 }
 

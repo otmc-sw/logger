@@ -6,6 +6,7 @@
 package internal
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -20,6 +21,9 @@ const (
 	colorLightRedBg = "\033[101m"
 	colorRed        = "\033[31m"
 	colorYellow     = "\033[33m"
+	colorGreen      = "\033[32m"
+	colorPurple     = "\033[35m"
+	colorWhite      = "\033[37m"
 )
 
 // ColorLevel returns the colored level string
@@ -53,6 +57,9 @@ func StripColorCodes(s string) string {
 	s = strings.ReplaceAll(s, colorLightRedBg, "")
 	s = strings.ReplaceAll(s, colorRed, "")
 	s = strings.ReplaceAll(s, colorYellow, "")
+	s = strings.ReplaceAll(s, colorGreen, "")
+	s = strings.ReplaceAll(s, colorPurple, "")
+	s = strings.ReplaceAll(s, colorWhite, "")
 	return s
 }
 
@@ -68,4 +75,47 @@ func ColorMessage(level string, message string) string {
 	default:
 		return message
 	}
+}
+
+// ColorMethod returns the colored HTTP method
+func ColorMethod(method string) string {
+	switch method {
+	case "GET":
+		return colorBlueBg + " " + method + " " + colorReset
+	case "POST":
+		return colorGreen + method + colorReset
+	case "PUT":
+		return colorYellow + method + colorReset
+	case "DELETE":
+		return colorRed + method + colorReset
+	case "PATCH":
+		return colorPurple + method + colorReset
+	case "OPTIONS":
+		return colorWhite + method + colorReset
+	case "HEAD":
+		return colorWhite + method + colorReset
+	default:
+		return method
+	}
+}
+
+// ColorStatusCode returns the colored HTTP status code
+func ColorStatusCode(code int) string {
+	switch {
+	case code >= 500:
+		return colorRed + fmt.Sprintf("%d", code) + colorReset
+	case code >= 400:
+		return colorRed + fmt.Sprintf("%d", code) + colorReset
+	case code >= 300:
+		return colorYellow + fmt.Sprintf("%d", code) + colorReset
+	case code >= 200:
+		return colorGreen + fmt.Sprintf("%d", code) + colorReset
+	default:
+		return fmt.Sprintf("%d", code)
+	}
+}
+
+// ColorTime returns the colored time string
+func ColorTime(timeStr string) string {
+	return colorPurple + timeStr + colorReset
 }

@@ -6,6 +6,8 @@
 package logger
 
 import (
+	"time"
+
 	"github.com/otmc-sw/logger/formatter"
 	"github.com/otmc-sw/logger/internal"
 )
@@ -20,6 +22,7 @@ type Logger interface {
 	Warn(format string, args ...any)
 	Error(format string, args ...any)
 	Crit(format string, args ...any)
+	Request(method, path string, statusCode int, latency time.Duration, clientIP string)
 	Sync() error
 }
 
@@ -118,6 +121,20 @@ func (l *stdLogger) Error(format string, args ...any) {
 // Crit logs a critical message and exits
 func (l *stdLogger) Crit(format string, args ...any) {
 	l.core.Log(internal.CritLevel, 4, format, args...)
+}
+
+// Request logs an HTTP request
+func (l *stdLogger) Request(method, path string, statusCode int, latency time.Duration, clientIP string) {
+	req := internal.Request{
+		Time:       time.Now(),
+		Method:     method,
+		Path:       path,
+		StatusCode: statusCode,
+		Latency:    latency,
+		ClientIP:   clientIP,
+	}
+	
+	l.core.LogRequest(req)
 }
 
 // Sync flushes the logger

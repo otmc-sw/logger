@@ -5,6 +5,10 @@
 **/
 package logger
 
+import (
+	"time"
+)
+
 // Trace logs a trace message using the global logger
 func Trace(format string, args ...any) {
 	global.Trace(format, args...)
@@ -33,6 +37,11 @@ func Error(format string, args ...any) {
 // Crit logs a critical message using the global logger and exits
 func Crit(format string, args ...any) {
 	global.Crit(format, args...)
+}
+
+// Request logs an HTTP request using the global logger
+func Request(method, path string, statusCode int, latency time.Duration, clientIP string) {
+	global.Request(method, path, statusCode, latency, clientIP)
 }
 
 // Sync flushes the global logger
