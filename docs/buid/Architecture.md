@@ -54,30 +54,19 @@ logger/
 # Architecture
 
 ```
-Application
-
+                 Application
                      │
-
          logger.Info / Warn / Error
-
                      │
-
              Global Logger API
-
                      │
-
                Logger Interface
-
                      │
-
               Logger Core Engine
-
      ┌───────────────┼────────────────┐
      │               │                │
      ▼               ▼                ▼
-
  Formatter       Multi Writer      Hooks
-
      │               │                │
      │               │                ├──────── Discord
      │               │                ├──────── Slack
@@ -85,14 +74,10 @@ Application
      │               │                └──────── Webhook
      │               │
      ▼               ▼
-
  Pretty        Console Writer
-
  Text          File Writer
-
  JSON          Rotate Writer
 ```
-
 ---
 
 # Core Components
@@ -151,29 +136,17 @@ logger.WithFormatter(...)
 
 ```
 Application
-
       │
-
 logger.Info(...)
-
       │
-
 Collect Runtime Information
-
       │
-
 Build Log Entry
-
       │
-
 Apply Formatter
-
       │
-
 Write Outputs
-
       │
-
 Execute Hooks
 ```
 
@@ -199,16 +172,13 @@ type Entry struct {
 ```
 2026-07-04 08:24:27.126 +07:00     Runner()             main.go:157   | INFO  | 🌐 Registering APIs...
 ```
-
 Automatically includes:
-
 - Timestamp
 - Timezone
 - Function
 - File
 - Line
 - Log Level
-
 - ANSI Color (Console only)
 
 ---

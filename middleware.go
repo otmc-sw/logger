@@ -5,28 +5,45 @@
 **/
 package logger
 
-// Middleware provides logging middleware for web frameworks
-// This package contains middleware implementations for:
-// - Gin (middleware/gin.go)
-// - Fiber (middleware/fiber.go)
-// - Echo (middleware/echo.go)
-// - Chi (middleware/chi.go)
+// Middleware provides logging middleware supporting both net/http and fasthttp.
+// The core implementation lives in middleware/core.go and supports both
+// HTTP libraries in a single file.
+//
+// net/http support — works with Chi, Gin, Echo, and standard mux:
+//   - Chi:          r.Use(middleware.Logger())
+//   - Gin:          router.Use(gin.WrapH(middleware.Logger()(nextHandler)))
+//   - Echo:         e.Use(echo.WrapMiddleware(middleware.Logger()))
+//   - net/http mux: handler = middleware.Logger()(mux)
+//
+// fasthttp support — works with Fiber, FastHTTP, and other fasthttp-based frameworks:
+//   - Fiber:        c := fasthttputil.NewRequestCtx(...) or use adaptor
+//   - FastHTTP:     handler := middleware.FastHTTPLogger()(myHandler)
+//   - fasthttp mux: h = middleware.FastHTTPLogger()(fasthttpMux.Handler)
 //
 // Each middleware automatically logs HTTP requests with:
-// - Request method and path
-// - Response status code
-// - Request duration
-// - Request ID (if available)
-// - Client IP
+//   - Request method and path
+//   - Response status code
+//   - Request duration
+//   - Request ID (X-Request-ID header)
+//   - Client IP
 //
-// Example usage with Gin:
+// Both variants share the same Config, SkipPaths, and log format.
 //
-//	import "github.com/otmc-sw/logger/middleware/gin"
+// Example usage with standard net/http:
 //
-//	router.Use(gin.Logger())
+//	mux := http.NewServeMux()
+//	mux.HandleFunc("/", handler)
+//	loggedMux := middleware.Logger()(mux)
+//	http.ListenAndServe(":8080", loggedMux)
 //
-// Example usage with Fiber:
+// Example usage with fasthttp:
 //
-//	import "github.com/otmc-sw/logger/middleware/fiber"
+//	handler := middleware.FastHTTPLogger()(myHandler)
+//	fasthttp.ListenAndServe(":8080", handler)
 //
-//	app.Use(fiber.Logger())
+// Example usage with Chi:
+//
+//	import "github.com/otmc-sw/logger/middleware"
+//
+//	r := chi.NewRouter()
+//	r.Use(middleware.Logger())

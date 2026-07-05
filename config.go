@@ -50,9 +50,9 @@ func DefaultConfig() Config {
 		JSON:       false,
 		Caller:     true,
 		Stacktrace: false,
-		MaxSize:    100, // 100 MB
+		MaxSize:    10, // 10 MB
 		MaxBackups: 3,
-		MaxAge:     30, // 30 days
+		MaxAge:     90, // 90 days
 		Compress:   true,
 	}
 }

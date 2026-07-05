@@ -1,0 +1,11 @@
+{
+  "name": "logger",
+  "description": "OTMC Logger",
+  "version": "0.1.2",
+  "license": "Apache License 2.0",
+  "author": "Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.",
+  "copyright": "Copyright © 2026 OTMC Softwares.",
+  "email": "otmc.dev@gmail.com",
+  "location": "An Nhon, Gia Lai, Viet Nam",
+  "type": "module"
+}
