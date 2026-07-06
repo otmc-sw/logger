@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @License Apache License 2.0
  * @Copyright (c) 2026 OTMC Softwares. OTMC Golang Logger.
  * @Contributors Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
@@ -6,6 +6,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"time"
@@ -13,29 +14,50 @@ import (
 	"github.com/otmc-sw/logger"
 )
 
+var TEST_ID = 1
+
 func main() {
 	_ = os.MkdirAll("logs", 0755)
-
 	testBasicConsoleLogging()
-
 	testFileLogging()
-
 	testJSONLogging()
-
 	testCustomLogger()
-
 	testLogLevelFiltering()
-
 	testRequest()
 
-	logger.Info("âœ… All tests completed!")
+	// Đồng bộ logger trước khi gọi hàm test cuối cùng gây dừng chương trình
+	logger.Info("✅ All standard tests completed!")
 	_ = logger.Sync()
 
 	testCrit()
 }
 
+func buildHeader(title string) {
+	if TEST_ID > 1 {
+		fmt.Println("\n")
+	}
+
+	const green = "\033[32m"
+	const reset = "\033[0m"
+
+	// 1. Tạo sẵn viền trên và viền dưới cố định (độ dài 70 ký tự)
+	topBorder    := "┌────────────────────────────────────────────────────────────────────┐"
+	bottomBorder := "└────────────────────────────────────────────────────────────────────┘"
+
+	// 2. Định dạng nội dung bên trong:
+	// "│ ▶ TEST %d: %-52s │" -> %-52s giúp tự động thêm khoảng trắng vào bên phải tiêu đề
+	// Số 52 được căn chỉnh để bù trừ chính xác cho độ rộng hiển thị của emoji `▶`
+	content := fmt.Sprintf("│ ▶ TEST %d: %-52s │", TEST_ID, title)
+
+	// 3. In ra màn hình với màu xanh lá
+	fmt.Println(green + topBorder + reset)
+	fmt.Println(green + content + reset)
+	fmt.Println(green + bottomBorder + reset)
+
+	TEST_ID++
+}
 func testBasicConsoleLogging() {
-	logger.Info("=== Test 1: Basic Console Logging ===")
+	buildHeader("Basic Console Logging")
 
 	logger.Init(logger.Config{
 		Level:   logger.TraceLevel,
@@ -43,15 +65,15 @@ func testBasicConsoleLogging() {
 		Caller:  true,
 	})
 
-	logger.Trace("ðŸ” Trace message - detailed debugging")
-	logger.Debug("ðŸ› Debug message - debugging info")
-	logger.Info("âœ… Info message - general information")
-	logger.Warn("âš ï¸ Warn message - warning condition")
-	logger.Error("âŒ Error message - error occurred")
+	logger.Trace("🔍 Trace message - detailed debugging")
+	logger.Debug("🐛 Debug message - debugging info")
+	logger.Info("✅ Info message - general information")
+	logger.Warn("⚠️ Warn message - warning condition")
+	logger.Error("❌ Error message - error occurred")
 }
 
 func testFileLogging() {
-	logger.Info("=== Test 2: File Logging ===")
+	buildHeader("File Logging")
 
 	logPath, _ := filepath.Abs("logs/test.log")
 
@@ -63,18 +85,18 @@ func testFileLogging() {
 		Caller:   true,
 	})
 
-	logger.Trace("ðŸ” This trace should not appear (level is Debug)")
-	logger.Debug("ðŸ› Debug message to file")
-	logger.Info("âœ… Info message to file")
-	logger.Warn("âš ï¸ Warn message to file")
-	logger.Error("âŒ Error message to file")
+	logger.Trace("🔍 This trace should not appear (level is Debug)")
+	logger.Debug("🐛 Debug message to file")
+	logger.Info("✅ Info message to file")
+	logger.Warn("⚠️ Warn message to file")
+	logger.Error("❌ Error message to file")
 
-	logger.Info("ðŸ“ Check logs/test.log for file output")
+	logger.Info("📁 Check logs/test.log for file output")
 	_ = logger.Sync()
 }
 
 func testJSONLogging() {
-	logger.Info("=== Test 3: JSON Formatting ===")
+	buildHeader("JSON Formatting")
 
 	logPath, _ := filepath.Abs("logs/test.json")
 
@@ -87,16 +109,16 @@ func testJSONLogging() {
 		Caller:   true,
 	})
 
-	logger.Info("âœ… JSON formatted message")
-	logger.Warn("âš ï¸ JSON warning message")
-	logger.Error("âŒ JSON error message")
+	logger.Info("✅ JSON formatted message")
+	logger.Warn("⚠️ JSON warning message")
+	logger.Error("❌ JSON error message")
 
-	logger.Info("ðŸ“ Check logs/test.json for JSON output")
+	logger.Info("📁 Check logs/test.json for JSON output")
 	_ = logger.Sync()
 }
 
 func testCustomLogger() {
-	logger.Info("=== Test 4: Custom Logger Instances ===")
+	buildHeader("Custom Logger Instances")
 
 	consoleLog := logger.New(
 		logger.WithConsole(true),
@@ -104,11 +126,11 @@ func testCustomLogger() {
 		logger.WithCaller(true),
 	)
 
-	consoleLog.Trace("ðŸ” Custom logger - trace")
-	consoleLog.Debug("ðŸ› Custom logger - debug")
-	consoleLog.Info("âœ… Custom logger - info")
-	consoleLog.Warn("âš ï¸ Custom logger - warn")
-	consoleLog.Error("âŒ Custom logger - error")
+	consoleLog.Trace("🔍 Custom logger - trace")
+	consoleLog.Debug("🐛 Custom logger - debug")
+	consoleLog.Info("✅ Custom logger - info")
+	consoleLog.Warn("⚠️ Custom logger - warn")
+	consoleLog.Error("❌ Custom logger - error")
 
 	logPath, _ := filepath.Abs("logs/custom.log")
 	fileLog := logger.New(
@@ -117,16 +139,16 @@ func testCustomLogger() {
 		logger.WithCaller(true),
 	)
 
-	fileLog.Info("âœ… Custom file logger - info")
-	fileLog.Warn("âš ï¸ Custom file logger - warn")
-	fileLog.Error("âŒ Custom file logger - error")
+	fileLog.Info("✅ Custom file logger - info")
+	fileLog.Warn("⚠️ Custom file logger - warn")
+	fileLog.Error("❌ Custom file logger - error")
 
 	_ = fileLog.Sync()
-	logger.Info("ðŸ“ Check logs/custom.log for custom logger output")
+	logger.Info("📁 Check logs/custom.log for custom logger output")
 }
 
 func testLogLevelFiltering() {
-	logger.Info("=== Test 5: Log Level Filtering ===")
+	buildHeader("Log Level Filtering")
 
 	logger.Init(logger.Config{
 		Level:   logger.WarnLevel,
@@ -134,11 +156,11 @@ func testLogLevelFiltering() {
 		Caller:  true,
 	})
 
-	logger.Trace("ðŸ” This trace should NOT appear")
-	logger.Debug("ðŸ› This debug should NOT appear")
-	logger.Info("âœ… This info should NOT appear")
-	logger.Warn("âš ï¸ This warn SHOULD appear")
-	logger.Error("âŒ This error SHOULD appear")
+	logger.Trace("🔍 This trace should NOT appear")
+	logger.Debug("🐛 This debug should NOT appear")
+	logger.Info("✅ This info should NOT appear")
+	logger.Warn("⚠️ This warn SHOULD appear")
+	logger.Error("❌ This error SHOULD appear")
 
 	logger.Init(logger.Config{
 		Level:   logger.ErrorLevel,
@@ -146,11 +168,11 @@ func testLogLevelFiltering() {
 		Caller:  true,
 	})
 
-	logger.Trace("ðŸ” This trace should NOT appear")
-	logger.Debug("ðŸ› This debug should NOT appear")
-	logger.Info("âœ… This info should NOT appear")
-	logger.Warn("âš ï¸ This warn should NOT appear")
-	logger.Error("âŒ This error SHOULD appear")
+	logger.Trace("🔍 This trace should NOT appear")
+	logger.Debug("🐛 This debug should NOT appear")
+	logger.Info("✅ This info should NOT appear")
+	logger.Warn("⚠️ This warn should NOT appear")
+	logger.Error("❌ This error SHOULD appear")
 
 	logger.Init(logger.Config{
 		Level:   logger.InfoLevel,
@@ -159,12 +181,8 @@ func testLogLevelFiltering() {
 	})
 }
 
-func testCrit() {
-	logger.Info("=== Test 6: Critical Logging ===")
-	logger.Crit("ðŸ’¥ This crit SHOULD appear and program will exit")
-}
-
 func testRequest() {
+	buildHeader("Request Logging")
 	logger.Request("GET", "/documents", 200, 1*time.Millisecond, "127.0.0.1")
 	logger.Request("POST", "/api/users", 201, 150*time.Millisecond, "192.168.1.100")
 	logger.Request("DELETE", "/api/users/123", 204, 50*time.Millisecond, "10.0.0.1")
@@ -172,5 +190,9 @@ func testRequest() {
 	logger.Request("POST", "/error", 500, 200*time.Millisecond, "192.168.1.50")
 	logger.Request("PUT", "/api/data", 200, 100*time.Millisecond, "172.16.0.100")
 	logger.Request("PATCH", "/api/data", 200, 100*time.Millisecond, "172.16.0.100")
+}
 
+func testCrit() {
+	buildHeader("Critical Logging")
+	logger.Crit("💥 This crit SHOULD appear and program will exit")
 }

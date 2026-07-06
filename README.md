@@ -43,6 +43,7 @@ func main() {
 	logger.Info("🌐 Server listening on %s:%d", "localhost", 8080)
 	logger.Warn("⚠️ Memory usage is high: %.1f%%", 85.5)
 	logger.Error("❌ Failed to connect to database: %s", "postgres")
+    // Warning: This will close the application.
 	logger.Crit("❌ Unable to initialize application: %v", err)
 }
 ```
@@ -52,9 +53,16 @@ func main() {
 The logger automatically formats output with timestamps, caller information, and colors:
 
 ```
-2026-07-04 15:49:40.404 +07:00                 Info()       global.go:20    | INFO  | ✅ Application started
-2026-07-04 15:49:40.404 +07:00                 Info()       global.go:20    | INFO  | 🌐 Server listening on localhost:8080
-2026-07-04 15:49:40.405 +07:00                 Warn()       global.go:25    | WARN  | ⚠️ Memory usage is high 85.5
+2026-07-06 08:57:34.208 +07:00     Initializer()      main.go:104   | INFO  | ✅ Database connection established.
+2026-07-06 08:57:34.208 +07:00     Initializer()      main.go:106   | INFO  | 🧩 Loading settings...
+2026-07-06 08:57:34.209 +07:00     Initializer()      main.go:112   | INFO  | 🤖 LLM Provider: groq
+2026-07-06 08:57:34.209 +07:00     Initializer()      main.go:119   | INFO  | ✅ LLM client initialized.
+2026-07-06 08:57:34.209 +07:00     Initializer()      main.go:149   | INFO  | 📁 Run directory: D:\SCM\GitHub\OTMC\Softwares\document-hub\backend
+2026-07-06 08:57:34.209 +07:00     Initializer()      main.go:150   | INFO  | 📦 Frontend dist: D:\SCM\GitHub\OTMC\Softwares\document-hub\frontend\dist
+2026-07-06 08:57:34.209 +07:00          Runner()      main.go:154   | INFO  | 🌿 Running application ...
+2026-07-06 08:57:34.209 +07:00          Runner()      main.go:157   | INFO  | 🌐 Registering APIs ...
+2026-07-06 08:57:34.210 +07:00           Start() scheduler.go:57    | INFO  | ✅ Backup scheduler engine started
+2026-07-06 08:57:34.210 +07:00          reload() scheduler.go:142   | INFO  | 🔀 Backup scheduled with cron expression: 0 2 * * * (max backups: 10)
 ```
 
 ## ⚙️ Configuration
@@ -69,7 +77,7 @@ logger.Init(logger.Config{
     Filename:   "logs/app.log",
     JSON:       false,
     Caller:     true,
-    MaxSize:    100,    // MB
+    MaxSize:    20,     // MB
     MaxBackups: 3,
     MaxAge:     30,     // days
     Compress:   true,
@@ -85,7 +93,7 @@ log := logger.New(
     logger.WithFile("logs/app.log"),
     logger.WithJSON(),
     logger.WithCaller(true),
-    logger.WithMaxSize(100),
+    logger.WithMaxSize(20),
     logger.WithMaxBackups(3),
     logger.WithMaxAge(30),
     logger.WithCompress(true),
@@ -115,7 +123,8 @@ log := logger.New(
 
 Output:
 ```
-2026-07-04 15:49:40.404 +07:00                 Info()       main.go:20    | INFO  | Application started
+2026-07-06 08:57:34.208 +07:00     Initializer()      main.go:106   | INFO  | 🧩 Loading settings...
+2026-07-06 08:57:34.209 +07:00          Runner()      main.go:154   | INFO  | 🌿 Running application ...
 ```
 
 ### 📝 Text Formatter
@@ -124,7 +133,6 @@ Output:
 log := logger.New(
     logger.WithConsole(),
 )
-// Use TextFormatter by setting it on the core
 ```
 
 ### 📋 JSON Formatter
@@ -198,7 +206,7 @@ Automatic log rotation using lumberjack:
 logger.Init(logger.Config{
     File:       true,
     Filename:   "logs/app.log",
-    MaxSize:    100,    // Max size in MB
+    MaxSize:    20,     // Max size in MB
     MaxBackups: 3,      // Max number of old log files
     MaxAge:     30,     // Max age in days
     Compress:   true,   // Compress rotated files
@@ -209,12 +217,12 @@ logger.Init(logger.Config{
 
 Colors are automatically applied to console output:
 
-- ⚪ **TRACE** - Gray
-- 🔵 **DEBUG** - Blue
-- 🟢 **INFO** - Green
-- 🟡 **WARN** - Yellow
-- 🔴 **ERROR** - Red
-- 🔴 **CRIT** - Bright Red
+- **TRACE** - Gray
+- **DEBUG** - Cyan
+- **INFO**  - Blue
+- **WARN**  - Yellow
+- **ERROR** - Red
+- **CRIT**  - Bright Red
 
 Colors are automatically stripped when writing to files.
 
@@ -235,13 +243,11 @@ Core Engine
 ## 📄 License
 
 Apache License 2.0
-
-## ©️ Copyright
-
-Copyright (c) 2026 OTMC Softwares
+Copyright (c) 2026 OTMC Softwares.
 
 ## ✨ Contributors
 
 - 🌿 Nguyen Van Trung
 - 🌿 Nguyen Thi Hoai
 - 🌿 OTMC Contributors
+
