@@ -29,13 +29,6 @@ import (
 )
 
 func main() {
-    logger.Init(logger.Config{
-        Level:    logger.InfoLevel,
-        Console:  true,
-        File:     true,
-        Filename: "logs/app.log",
-        Caller:   true,
-    })
     err := "OTMC Testing Message"
 
 	logger.Trace("🚀 Starting application...")
@@ -66,23 +59,6 @@ The logger automatically formats output with timestamps, caller information, and
 ```
 
 ## ⚙️ Configuration
-
-### 🔧 Using Config
-
-```go
-logger.Init(logger.Config{
-    Level:      logger.DebugLevel,
-    Console:    true,
-    File:       true,
-    Filename:   "logs/app.log",
-    JSON:       false,
-    Caller:     true,
-    MaxSize:    20,     // MB
-    MaxBackups: 3,
-    MaxAge:     30,     // days
-    Compress:   true,
-})
-```
 
 ### 🛠️ Using Functional Options
 
@@ -164,13 +140,6 @@ The library provides a global logger instance for convenience:
 // Use global functions
 logger.Info("Message")
 logger.Error("Error: %v", err)
-
-// Configure global logger
-logger.Init(logger.Config{
-    Level: logger.DebugLevel,
-})
-
-// Set log level
 logger.SetLevel(logger.WarnLevel)
 ```
 
@@ -203,14 +172,10 @@ jsonLog := logger.New(
 Automatic log rotation using lumberjack:
 
 ```go
-logger.Init(logger.Config{
-    File:       true,
-    Filename:   "logs/app.log",
-    MaxSize:    20,     // Max size in MB
-    MaxBackups: 3,      // Max number of old log files
-    MaxAge:     30,     // Max age in days
-    Compress:   true,   // Compress rotated files
-})
+logger.WithMaxSize(20)
+logger.WithMaxBackups(3)
+logger.WithMaxAge(30)
+logger.WithCompress(true)
 ```
 
 ## 🎨 Color Output

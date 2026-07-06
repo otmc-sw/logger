@@ -60,47 +60,6 @@ func New(opts ...Option) Logger {
 	return &stdLogger{core: internal.NewCore(cfg.Level, cfg.Caller, fmt, writer)}
 }
 
-func Init(config Config) {
-	cfg := DefaultConfig()
-
-	if config.Level != 0 {
-		cfg.Level = config.Level
-	}
-	if config.Console {
-		cfg.Console = config.Console
-	}
-	if config.Filename != "" {
-		cfg.Filename = config.Filename
-	}
-	if config.JSON {
-		cfg.JSON = config.JSON
-	}
-	if config.Caller {
-		cfg.Caller = config.Caller
-	}
-	if config.MaxSize != 0 {
-		cfg.MaxSize = config.MaxSize
-	}
-	if config.MaxBackups != 0 {
-		cfg.MaxBackups = config.MaxBackups
-	}
-	if config.MaxAge != 0 {
-		cfg.MaxAge = config.MaxAge
-	}
-	if config.Compress {
-		cfg.Compress = config.Compress
-	}
-	if config.TimeFormat != "" {
-		cfg.TimeFormat = config.TimeFormat
-	}
-
-	global = New(func(c *Config) { *c = cfg })
-}
-
-func (l *stdLogger) log(level internal.Level, format string, args ...any) {
-	l.core.Log(level, 4, format, args...)
-}
-
 func (l *stdLogger) Trace(f string, a ...any) { l.core.Log(internal.TraceLevel, 4, f, a...) }
 func (l *stdLogger) Debug(f string, a ...any) { l.core.Log(internal.DebugLevel, 4, f, a...) }
 func (l *stdLogger) Info(f string, a ...any)  { l.core.Log(internal.InfoLevel, 4, f, a...) }

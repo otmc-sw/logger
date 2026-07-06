@@ -46,3 +46,4 @@ func SetLevel(level Level) {
 		l.core.SetLevel(level)
 	}
 }
+

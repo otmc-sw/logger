@@ -15,14 +15,6 @@ func file() {
 
 	_ = os.MkdirAll("logs", 0755)
 
-	logger.Init(logger.Config{
-		Level:    logger.DebugLevel,
-		Console:  true,
-		File:     true,
-		Filename: "logs/app.log",
-		Caller:   true,
-	})
-
 	logger.Trace("🔍 This is a trace message")
 	logger.Debug("🌿 Debugging information")
 	logger.Info("✅ Application started successfully")

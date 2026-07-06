@@ -97,12 +97,6 @@ logger/
 
 # Public API
 
-## Initialization
-
-```
-logger.Init(...)
-```
-
 ## Create Logger
 
 ```

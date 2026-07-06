@@ -76,14 +76,6 @@ otmc-logger/
 
 # Public API
 
-## Initialization
-
-```
-logger.Init(logger.Config{
-    Level: logger.InfoLevel,
-})
-```
-
 ## Logging
 
 ```
@@ -328,13 +320,11 @@ import "github.com/otmc-sw/logger"
 
 func main() {
 
-    logger.Init(logger.Config{
-        Level: logger.DebugLevel,
-        Console: true,
-        File: true,
-        Filename: "logs/app.log",
-
-    })
+    logger.New(
+        logger.WithLevel(logger.DebugLevel),
+        logger.WithConsole(),
+        logger.WithFile("logs/app.log"),
+    )
 
     logger.Info("🚀 Application Started")
     logger.Info("🌐 Listening on %s:%d", host, port)
