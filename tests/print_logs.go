@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/otmc-sw/logger"
@@ -25,7 +26,7 @@ func main() {
 	testCustomLogger()
 	testLogLevelFiltering()
 	testRequest()
-
+	testRotate()
 	_ = logger.Sync()
 
 	testCrit()
@@ -63,7 +64,7 @@ func buildHeader(title string) {
 
 func testBasicConsoleLogging() {
 	buildHeader("Basic Console Logging")
-	
+
 	logger.Trace("🔍 Trace message - detailed debugging")
 	logger.Debug("🐛 Debug message - debugging info")
 	logger.Info("✅ Info message - general information")
@@ -173,4 +174,24 @@ func testRequest() {
 func testCrit() {
 	buildHeader("Critical Logging")
 	logger.Crit("💥 This crit SHOULD appear and program will exit")
+}
+
+func testRotate() {
+	buildHeader("Log Rotation")
+	data := make([]byte, 900*1024)
+	_ = os.WriteFile("logs/rotated.log", data, 0644)
+	rotatedLogger := logger.New(
+		logger.WithFile("logs/rotated.log"),
+		logger.WithConsole(false),
+		logger.WithMaxSize(1), // 1MB
+		logger.WithMaxBackups(3),
+		logger.WithMaxAge(30),
+		logger.WithCompress(true),
+	)
+
+	for range 1000 {
+		rotatedLogger.Info("%s", strings.Repeat("A", 200))
+	}
+
+	_ = rotatedLogger.Sync()
 }
