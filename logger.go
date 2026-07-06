@@ -2,7 +2,7 @@
  * @License Apache License 2.0
  * @Copyright (c) 2026 OTMC Softwares. OTMC Golang Logger.
  * @Contributors Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
-**/
+ **/
 package logger
 
 import (
@@ -30,101 +30,93 @@ type stdLogger struct {
 }
 
 func New(opts ...Option) Logger {
-	config := DefaultConfig()
+	cfg := DefaultConfig()
 	for _, opt := range opts {
-		opt(&config)
+		opt(&cfg)
 	}
 
 	var fmt internal.Formatter
-	if config.JSON {
-		fmt = formatter.NewJSONFormatter(config.TimeFormat)
+	if cfg.JSON {
+		fmt = formatter.NewJSONFormatter(cfg.TimeFormat)
 	} else {
-		fmt = formatter.NewPrettyFormatter(config.Console, config.TimeFormat)
+		fmt = formatter.NewPrettyFormatter(cfg.Console, cfg.TimeFormat)
+	}
+
+	var writers []internal.Writer
+	if cfg.Console {
+		writers = append(writers, internal.NewConsoleWriter(nil))
+	}
+	if cfg.File && cfg.Filename != "" {
+		writers = append(writers, internal.NewRotateWriter(
+			cfg.Filename, cfg.MaxSize, cfg.MaxBackups, cfg.MaxAge, cfg.Compress,
+		))
 	}
 
 	var writer internal.Writer
-	var writers []internal.Writer
-
-	if config.Console {
-		writers = append(writers, internal.NewConsoleWriter(nil))
-	}
-
-	if config.File && config.Filename != "" {
-		rotateWriter := internal.NewRotateWriter(
-			config.Filename,
-			config.MaxSize,
-			config.MaxBackups,
-			config.MaxAge,
-			config.Compress,
-		)
-		writers = append(writers, rotateWriter)
-	}
-
 	if len(writers) > 0 {
-		if len(writers) == 1 {
-			writer = writers[0]
-		} else {
-			writer = internal.NewMultiWriter(writers...)
-		}
+		writer = internal.NewMultiWriter(writers...)
 	}
 
-	core := internal.NewCore(config.Level, config.Caller, fmt, writer)
-
-	return &stdLogger{core: core}
+	return &stdLogger{core: internal.NewCore(cfg.Level, cfg.Caller, fmt, writer)}
 }
 
 func Init(config Config) {
-	global = New(
-		WithLevel(config.Level),
-		WithConsole(config.Console),
-		WithFile(config.Filename),
-		WithJSON(config.JSON),
-		WithCaller(config.Caller),
-		WithMaxSize(config.MaxSize),
-		WithMaxBackups(config.MaxBackups),
-		WithMaxAge(config.MaxAge),
-		WithCompress(config.Compress),
-		WithTimeFormat(config.TimeFormat),
-	)
+	cfg := DefaultConfig()
+
+	if config.Level != 0 {
+		cfg.Level = config.Level
+	}
+	if config.Console {
+		cfg.Console = config.Console
+	}
+	if config.Filename != "" {
+		cfg.Filename = config.Filename
+	}
+	if config.JSON {
+		cfg.JSON = config.JSON
+	}
+	if config.Caller {
+		cfg.Caller = config.Caller
+	}
+	if config.MaxSize != 0 {
+		cfg.MaxSize = config.MaxSize
+	}
+	if config.MaxBackups != 0 {
+		cfg.MaxBackups = config.MaxBackups
+	}
+	if config.MaxAge != 0 {
+		cfg.MaxAge = config.MaxAge
+	}
+	if config.Compress {
+		cfg.Compress = config.Compress
+	}
+	if config.TimeFormat != "" {
+		cfg.TimeFormat = config.TimeFormat
+	}
+
+	global = New(func(c *Config) { *c = cfg })
 }
 
-func (l *stdLogger) Trace(format string, args ...any) {
-	l.core.Log(internal.TraceLevel, 4, format, args...)
+func (l *stdLogger) log(level internal.Level, format string, args ...any) {
+	l.core.Log(level, 4, format, args...)
 }
 
-func (l *stdLogger) Debug(format string, args ...any) {
-	l.core.Log(internal.DebugLevel, 4, format, args...)
-}
-
-func (l *stdLogger) Info(format string, args ...any) {
-	l.core.Log(internal.InfoLevel, 4, format, args...)
-}
-
-func (l *stdLogger) Warn(format string, args ...any) {
-	l.core.Log(internal.WarnLevel, 4, format, args...)
-}
-
-func (l *stdLogger) Error(format string, args ...any) {
-	l.core.Log(internal.ErrorLevel, 4, format, args...)
-}
-
-func (l *stdLogger) Crit(format string, args ...any) {
-	l.core.Log(internal.CritLevel, 4, format, args...)
-}
+func (l *stdLogger) Trace(f string, a ...any) { l.core.Log(internal.TraceLevel, 4, f, a...) }
+func (l *stdLogger) Debug(f string, a ...any) { l.core.Log(internal.DebugLevel, 4, f, a...) }
+func (l *stdLogger) Info(f string, a ...any)  { l.core.Log(internal.InfoLevel, 4, f, a...) }
+func (l *stdLogger) Warn(f string, a ...any)  { l.core.Log(internal.WarnLevel, 4, f, a...) }
+func (l *stdLogger) Error(f string, a ...any) { l.core.Log(internal.ErrorLevel, 4, f, a...) }
+func (l *stdLogger) Crit(f string, a ...any)  { l.core.Log(internal.CritLevel, 4, f, a...) }
 
 func (l *stdLogger) Request(method, path string, statusCode int, latency time.Duration, clientIP string) {
-	req := internal.Request{
+	l.core.LogRequest(internal.Request{
 		Time:       time.Now(),
 		Method:     method,
 		Path:       path,
 		StatusCode: statusCode,
 		Latency:    latency,
 		ClientIP:   clientIP,
-	}
-
-	l.core.LogRequest(req)
+	})
 }
 
-func (l *stdLogger) Sync() error {
-	return l.core.Sync()
-}
+func (l *stdLogger) Sync() error { return l.core.Sync() }

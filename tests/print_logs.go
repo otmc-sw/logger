@@ -19,6 +19,7 @@ var TEST_ID = 1
 func main() {
 	_ = os.MkdirAll("logs", 0755)
 	testBasicConsoleLogging()
+	testNoCaller()
 	testFileLogging()
 	testJSONLogging()
 	testCustomLogger()
@@ -63,15 +64,21 @@ func buildHeader(title string) {
 
 func testBasicConsoleLogging() {
 	buildHeader("Basic Console Logging")
+	logger.Trace("🔍 Trace message - detailed debugging")
+	logger.Debug("🐛 Debug message - debugging info")
+	logger.Info("✅ Info message - general information")
+	logger.Warn("⚠️ Warn message - warning condition")
+	logger.Error("❌ Error message - error occurred")
+}
 
+func testNoCaller() {
+	buildHeader("No Caller Information")
+	
 	logger.Init(logger.Config{
 		Level:      logger.TraceLevel,
 		Console:    true,
 		Caller:     false,
-		TimeFormat: "15:04:05.000",
 	})
-
-	logger.Trace("🔍 Trace message - detailed debugging")
 	logger.Debug("🐛 Debug message - debugging info")
 	logger.Info("✅ Info message - general information")
 	logger.Warn("⚠️ Warn message - warning condition")
@@ -84,11 +91,12 @@ func testFileLogging() {
 	logPath, _ := filepath.Abs("logs/test.log")
 
 	logger.Init(logger.Config{
-		Level:    logger.DebugLevel,
-		Console:  true,
-		File:     true,
-		Filename: logPath,
-		Caller:   true,
+		Level:      logger.DebugLevel,
+		Console:    true,
+		File:       true,
+		Filename:   logPath,
+		Caller:     true,
+		TimeFormat: "2006-01-02 15:04:05.000",
 	})
 
 	logger.Trace("🔍 This trace should not appear (level is Debug)")
@@ -107,12 +115,13 @@ func testJSONLogging() {
 	logPath, _ := filepath.Abs("logs/test.json")
 
 	logger.Init(logger.Config{
-		Level:    logger.InfoLevel,
-		Console:  true,
-		File:     true,
-		Filename: logPath,
-		JSON:     true,
-		Caller:   true,
+		Level:      logger.InfoLevel,
+		Console:    true,
+		File:       true,
+		Filename:   logPath,
+		JSON:       true,
+		Caller:     true,
+		TimeFormat: "15:04:05.000",
 	})
 
 	logger.Info("✅ JSON formatted message")
@@ -155,9 +164,9 @@ func testLogLevelFiltering() {
 	buildHeader("Log Level Filtering")
 
 	logger.Init(logger.Config{
-		Level:   logger.WarnLevel,
-		Console: true,
-		Caller:  true,
+		Level:      logger.WarnLevel,
+		Console:    true,
+		Caller:     true,
 	})
 
 	logger.Trace("🔍 This trace should NOT appear")
@@ -167,9 +176,9 @@ func testLogLevelFiltering() {
 	logger.Error("❌ This error SHOULD appear")
 
 	logger.Init(logger.Config{
-		Level:   logger.ErrorLevel,
-		Console: true,
-		Caller:  true,
+		Level:      logger.ErrorLevel,
+		Console:    true,
+		Caller:     true,
 	})
 
 	logger.Trace("🔍 This trace should NOT appear")
@@ -179,14 +188,22 @@ func testLogLevelFiltering() {
 	logger.Error("❌ This error SHOULD appear")
 
 	logger.Init(logger.Config{
-		Level:   logger.InfoLevel,
-		Console: true,
-		Caller:  true,
+		Level:      logger.InfoLevel,
+		Console:    true,
+		Caller:     true,
 	})
 }
 
 func testRequest() {
 	buildHeader("Request Logging")
+
+	logger.Init(logger.Config{
+		Level:      logger.InfoLevel,
+		Console:    true,
+		Caller:     false,
+		TimeFormat: "15:04:05.000",
+	})
+
 	logger.Request("GET", "/documents", 200, 1*time.Millisecond, "127.0.0.1")
 	logger.Request("POST", "/api/users", 201, 150*time.Millisecond, "192.168.1.100")
 	logger.Request("DELETE", "/api/users/123", 204, 50*time.Millisecond, "10.0.0.1")
@@ -198,5 +215,13 @@ func testRequest() {
 
 func testCrit() {
 	buildHeader("Critical Logging")
+
+	logger.Init(logger.Config{
+		Level:      logger.InfoLevel,
+		Console:    true,
+		Caller:     false,
+		TimeFormat: "15:04:05.000",
+	})
+
 	logger.Crit("💥 This crit SHOULD appear and program will exit")
 }

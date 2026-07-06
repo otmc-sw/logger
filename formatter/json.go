@@ -7,6 +7,7 @@ package formatter
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/otmc-sw/logger/internal"
 )
@@ -20,8 +21,12 @@ func NewJSONFormatter(timeFormat string) internal.Formatter {
 }
 
 func (f *JSONFormatter) Format(entry internal.Entry) string {
+	timeFormat := f.timeFormat
+	if timeFormat == "" {
+		timeFormat = time.RFC3339Nano
+	}
 	data := map[string]interface{}{
-		"time":     entry.Time.Format(f.timeFormat),
+		"time":     entry.Time.Format(timeFormat),
 		"level":    entry.Level.String(),
 		"message":  entry.Message,
 		"function": entry.Function,
@@ -34,8 +39,12 @@ func (f *JSONFormatter) Format(entry internal.Entry) string {
 }
 
 func (f *JSONFormatter) FormatRequest(req internal.Request) string {
+	timeFormat := f.timeFormat
+	if timeFormat == "" {
+		timeFormat = time.RFC3339Nano
+	}
 	data := map[string]interface{}{
-		"time":      req.Time.Format(f.timeFormat),
+		"time":      req.Time.Format(timeFormat),
 		"method":    req.Method,
 		"path":      req.Path,
 		"status":    req.StatusCode,

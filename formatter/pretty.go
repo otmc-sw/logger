@@ -22,7 +22,11 @@ func NewPrettyFormatter(colorize bool, timeFormat string) internal.Formatter {
 }
 
 func (f *PrettyFormatter) Format(entry internal.Entry) string {
-	timestamp := entry.Time.Format(f.timeFormat)
+	timeFormat := f.timeFormat
+	if timeFormat == "" {
+		timeFormat = "2006-01-02 15:04:05.000 -07:00"
+	}
+	timestamp := entry.Time.Format(timeFormat)
 	levelStr := entry.Level.String()
 	message := entry.Message
 
@@ -55,7 +59,11 @@ func (f *PrettyFormatter) Format(entry internal.Entry) string {
 }
 
 func (f *PrettyFormatter) FormatRequest(req internal.Request) string {
-	timestamp := req.Time.Format(f.timeFormat)
+	timeFormat := f.timeFormat
+	if timeFormat == "" {
+		timeFormat = "15:04:05.000"
+	}
+	timestamp := req.Time.Format(timeFormat)
 	latency := req.Latency.String()
 	method := req.Method
 	statusCodeStr := strconv.Itoa(req.StatusCode)
