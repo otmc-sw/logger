@@ -37,9 +37,9 @@ func New(opts ...Option) Logger {
 
 	var fmt internal.Formatter
 	if config.JSON {
-		fmt = formatter.NewJSONFormatter()
+		fmt = formatter.NewJSONFormatter(config.TimeFormat)
 	} else {
-		fmt = formatter.NewPrettyFormatter(config.Console)
+		fmt = formatter.NewPrettyFormatter(config.Console, config.TimeFormat)
 	}
 
 	var writer internal.Writer
@@ -84,6 +84,7 @@ func Init(config Config) {
 		WithMaxBackups(config.MaxBackups),
 		WithMaxAge(config.MaxAge),
 		WithCompress(config.Compress),
+		WithTimeFormat(config.TimeFormat),
 	)
 }
 

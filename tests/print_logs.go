@@ -65,9 +65,10 @@ func testBasicConsoleLogging() {
 	buildHeader("Basic Console Logging")
 
 	logger.Init(logger.Config{
-		Level:   logger.TraceLevel,
-		Console: true,
-		Caller:  true,
+		Level:      logger.TraceLevel,
+		Console:    true,
+		Caller:     false,
+		TimeFormat: "15:04:05.000",
 	})
 
 	logger.Trace("🔍 Trace message - detailed debugging")

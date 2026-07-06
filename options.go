@@ -67,3 +67,9 @@ func WithCompress(enabled bool) Option {
 		c.Compress = enabled
 	}
 }
+
+func WithTimeFormat(format string) Option {
+	return func(c *Config) {
+		c.TimeFormat = format
+	}
+}

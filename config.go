@@ -17,6 +17,7 @@ type Config struct {
 	MaxBackups int
 	MaxAge     int
 	Compress   bool
+	TimeFormat string
 }
 
 func DefaultConfig() Config {
@@ -31,5 +32,6 @@ func DefaultConfig() Config {
 		MaxBackups: 3,
 		MaxAge:     90,
 		Compress:   true,
+		TimeFormat: "2006-01-02 15:04:05.000 -07:00",
 	}
 }
