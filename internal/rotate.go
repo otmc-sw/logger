@@ -25,7 +25,8 @@ func NewRotateWriter(filename string, maxSize, maxBackups, maxAge int, compress 
 }
 
 func (w *RotateWriter) Write(p []byte) (n int, err error) {
-	return w.lumberjack.Write(p)
+	stripped := StripColorCodes(string(p))
+	return w.lumberjack.Write([]byte(stripped))
 }
 
 func (w *RotateWriter) Sync() error {
