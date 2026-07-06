@@ -26,7 +26,6 @@ func main() {
 	testLogLevelFiltering()
 	testRequest()
 
-	logger.Info("✅ All standard tests completed!")
 	_ = logger.Sync()
 
 	testCrit()
@@ -64,6 +63,7 @@ func buildHeader(title string) {
 
 func testBasicConsoleLogging() {
 	buildHeader("Basic Console Logging")
+	
 	logger.Trace("🔍 Trace message - detailed debugging")
 	logger.Debug("🐛 Debug message - debugging info")
 	logger.Info("✅ Info message - general information")
@@ -74,17 +74,19 @@ func testBasicConsoleLogging() {
 func testNoCaller() {
 	buildHeader("No Caller Information")
 
-	logger.WithCaller(false)
+	logger.Configure(logger.WithCaller(false))
 	logger.Debug("🐛 Debug message - debugging info")
 	logger.Info("✅ Info message - general information")
 	logger.Warn("⚠️ Warn message - warning condition")
 	logger.Error("❌ Error message - error occurred")
+
+	logger.Configure(logger.WithCaller(true))
 }
 
 func testFileLogging() {
 	buildHeader("File Logging")
 
-	logger.WithFile("logs/test.log")
+	logger.Configure(logger.WithFile("logs/test.log"))
 	logger.Trace("🔍 This trace should not appear (level is Debug)")
 	logger.Debug("🐛 Debug message to file")
 	logger.Info("✅ Info message to file")
@@ -93,12 +95,13 @@ func testFileLogging() {
 
 	logger.Info("📁 Check logs/test.log for file output")
 	_ = logger.Sync()
+
+	logger.Configure(logger.WithConsole(true))
 }
 
 func testJSONLogging() {
 	buildHeader("JSON Formatting")
-	logger.WithJSON(true)
-	logger.WithTimeFormat("15:04:05.000")
+	logger.Configure(logger.WithJSON(true), logger.WithTimeFormat("15:04:05.000"))
 
 	logger.Info("✅ JSON formatted message")
 	logger.Warn("⚠️ JSON warning message")
@@ -106,6 +109,8 @@ func testJSONLogging() {
 
 	logger.Info("📁 Check logs/test.json for JSON output")
 	_ = logger.Sync()
+
+	logger.Configure(logger.WithJSON(false), logger.WithConsole(true))
 }
 
 func testCustomLogger() {
@@ -135,7 +140,7 @@ func testCustomLogger() {
 func testLogLevelFiltering() {
 	buildHeader("Log Level Filtering")
 
-	logger.WithLevel(logger.WarnLevel)
+	logger.SetLevel(logger.WarnLevel)
 
 	logger.Trace("🔍 This trace should NOT appear")
 	logger.Debug("🐛 This debug should NOT appear")
@@ -143,7 +148,7 @@ func testLogLevelFiltering() {
 	logger.Warn("⚠️ This warn SHOULD appear")
 	logger.Error("❌ This error SHOULD appear")
 
-	logger.WithLevel(logger.InfoLevel)
+	logger.SetLevel(logger.InfoLevel)
 
 	logger.Trace("🔍 This trace should NOT appear")
 	logger.Debug("🐛 This debug should NOT appear")
@@ -151,7 +156,7 @@ func testLogLevelFiltering() {
 	logger.Warn("⚠️ This warn should NOT appear")
 	logger.Error("❌ This error SHOULD appear")
 
-	logger.WithLevel(logger.InfoLevel)
+	logger.SetLevel(logger.InfoLevel)
 }
 
 func testRequest() {

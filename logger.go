@@ -6,68 +6,86 @@
 package logger
 
 import (
+	"sync"
 	"time"
 
 	"github.com/otmc-sw/logger/formatter"
 	"github.com/otmc-sw/logger/internal"
 )
 
-var global Logger = New()
+var global = New()
 
-type Logger interface {
-	Trace(format string, args ...any)
-	Debug(format string, args ...any)
-	Info(format string, args ...any)
-	Warn(format string, args ...any)
-	Error(format string, args ...any)
-	Crit(format string, args ...any)
-	Request(method, path string, statusCode int, latency time.Duration, clientIP string)
-	Sync() error
+type Logger struct {
+	mu     sync.RWMutex
+	config Config
+	core   *internal.Core
 }
 
-type stdLogger struct {
-	core *internal.Core
-}
-
-func New(opts ...Option) Logger {
+func New(opts ...Option) *Logger {
 	cfg := DefaultConfig()
 	for _, opt := range opts {
 		opt(&cfg)
 	}
-
-	var fmt internal.Formatter
-	if cfg.JSON {
-		fmt = formatter.NewJSONFormatter(cfg.TimeFormat)
-	} else {
-		fmt = formatter.NewPrettyFormatter(cfg.Console, cfg.TimeFormat)
+	return &Logger{
+		config: cfg,
+		core:   buildCore(cfg),
 	}
-
-	var writers []internal.Writer
-	if cfg.Console {
-		writers = append(writers, internal.NewConsoleWriter(nil))
-	}
-	if cfg.File && cfg.Filename != "" {
-		writers = append(writers, internal.NewRotateWriter(
-			cfg.Filename, cfg.MaxSize, cfg.MaxBackups, cfg.MaxAge, cfg.Compress,
-		))
-	}
-
-	var writer internal.Writer
-	if len(writers) > 0 {
-		writer = internal.NewMultiWriter(writers...)
-	}
-
-	return &stdLogger{core: internal.NewCore(cfg.Level, cfg.Caller, fmt, writer)}
 }
 
-func (l *stdLogger) Trace(f string, a ...any) { l.core.Log(internal.TraceLevel, 4, f, a...) }
-func (l *stdLogger) Debug(f string, a ...any) { l.core.Log(internal.DebugLevel, 4, f, a...) }
-func (l *stdLogger) Info(f string, a ...any)  { l.core.Log(internal.InfoLevel, 4, f, a...) }
-func (l *stdLogger) Warn(f string, a ...any)  { l.core.Log(internal.WarnLevel, 4, f, a...) }
-func (l *stdLogger) Error(f string, a ...any) { l.core.Log(internal.ErrorLevel, 4, f, a...) }
-func (l *stdLogger) Crit(f string, a ...any)  { l.core.Log(internal.CritLevel, 4, f, a...) }
 
-func (l *stdLogger) Request(method, path string, statusCode int, latency time.Duration, clientIP string) {
+func (l *Logger) Configure(opts ...Option) {
+	l.reconfigure(func(cfg *Config) {
+		for _, opt := range opts {
+			opt(cfg)
+		}
+	}, true)
+}
+
+func (l *Logger) Config() Config {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+	return l.config
+}
+
+func (l *Logger) Update(cfg Config) {
+	l.reconfigure(func(c *Config) {
+		*c = cfg
+	}, true)
+}
+
+func (l *Logger) SetLevel(level Level) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.config.Level = level
+	l.core.SetLevel(level)
+}
+
+
+func (l *Logger) Trace(format string, args ...any) {
+	l.core.Log(internal.TraceLevel, 4, format, args...)
+}
+
+func (l *Logger) Debug(format string, args ...any) {
+	l.core.Log(internal.DebugLevel, 4, format, args...)
+}
+
+func (l *Logger) Info(format string, args ...any) {
+	l.core.Log(internal.InfoLevel, 4, format, args...)
+}
+
+func (l *Logger) Warn(format string, args ...any) {
+	l.core.Log(internal.WarnLevel, 4, format, args...)
+}
+
+func (l *Logger) Error(format string, args ...any) {
+	l.core.Log(internal.ErrorLevel, 4, format, args...)
+}
+
+func (l *Logger) Crit(format string, args ...any) {
+	l.core.Log(internal.CritLevel, 4, format, args...)
+}
+
+func (l *Logger) Request(method, path string, statusCode int, latency time.Duration, clientIP string) {
 	l.core.LogRequest(internal.Request{
 		Time:       time.Now(),
 		Method:     method,
@@ -78,4 +96,57 @@ func (l *stdLogger) Request(method, path string, statusCode int, latency time.Du
 	})
 }
 
-func (l *stdLogger) Sync() error { return l.core.Sync() }
+func (l *Logger) Sync() error {
+	return l.core.Sync()
+}
+
+
+func (l *Logger) reconfigure(fn func(*Config), rebuild bool) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	fn(&l.config)
+	if rebuild {
+		l.rebuild()
+	}
+}
+
+func (l *Logger) rebuild() {
+	old := l.core
+	l.core = buildCore(l.config)
+	_ = old.Sync()
+}
+
+func buildCore(cfg Config) *internal.Core {
+	return internal.NewCore(
+		cfg.Level,
+		cfg.Caller,
+		buildFormatter(cfg),
+		buildWriter(cfg),
+	)
+}
+
+func buildFormatter(cfg Config) internal.Formatter {
+	if cfg.JSON {
+		return formatter.NewJSONFormatter(cfg.TimeFormat)
+	}
+	return formatter.NewPrettyFormatter(cfg.Console, cfg.TimeFormat)
+}
+
+func buildWriter(cfg Config) internal.Writer {
+	var writers []internal.Writer
+	if cfg.Console {
+		writers = append(writers, internal.NewConsoleWriter(nil))
+	}
+	if cfg.File && cfg.Filename != "" {
+		writers = append(writers, internal.NewRotateWriter(
+			cfg.Filename, cfg.MaxSize, cfg.MaxBackups, cfg.MaxAge, cfg.Compress,
+		))
+	}
+	if len(writers) == 0 {
+		return nil
+	}
+	if len(writers) == 1 {
+		return writers[0]
+	}
+	return internal.NewMultiWriter(writers...)
+}

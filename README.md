@@ -148,11 +148,18 @@ logger.SetLevel(logger.WarnLevel)
 Create multiple logger instances with different configurations:
 
 ```go
+// Global logger
+logger.SetLevel(logger.DebugLevel)
+
+logger.Info("This is a global log")
+
 // Console logger
 consoleLog := logger.New(
     logger.WithConsole(),
     logger.WithLevel(logger.DebugLevel),
 )
+
+consoleLog.Info("This is a console log")
 
 // File logger
 fileLog := logger.New(
@@ -160,11 +167,15 @@ fileLog := logger.New(
     logger.WithLevel(logger.InfoLevel),
 )
 
+fileLog.Info("This is a file log")
+
 // JSON logger for monitoring
 jsonLog := logger.New(
     logger.WithFile("logs/metrics.log"),
     logger.WithJSON(),
 )
+
+jsonLog.Info("This is a JSON log")
 ```
 
 ## ♻️ Log Rotation

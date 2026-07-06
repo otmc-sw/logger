@@ -42,8 +42,17 @@ func Sync() error {
 }
 
 func SetLevel(level Level) {
-	if l, ok := global.(*stdLogger); ok {
-		l.core.SetLevel(level)
-	}
+	global.SetLevel(level)
 }
 
+func Configure(opts ...Option) {
+	global.Configure(opts...)
+}
+
+func GetConfig() Config {
+	return global.Config()
+}
+
+func Update(cfg Config) {
+	global.Update(cfg)
+}
