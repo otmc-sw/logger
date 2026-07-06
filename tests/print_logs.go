@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @License Apache License 2.0
  * @Copyright (c) 2026 OTMC Softwares. OTMC Golang Logger.
  * @Contributors Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
@@ -25,7 +25,6 @@ func main() {
 	testLogLevelFiltering()
 	testRequest()
 
-	// Đồng bộ logger trước khi gọi hàm test cuối cùng gây dừng chương trình
 	logger.Info("✅ All standard tests completed!")
 	_ = logger.Sync()
 
@@ -34,28 +33,34 @@ func main() {
 
 func buildHeader(title string) {
 	if TEST_ID > 1 {
-		fmt.Println("\n")
+		fmt.Println("")
 	}
 
 	const green = "\033[32m"
 	const reset = "\033[0m"
 
-	// 1. Tạo sẵn viền trên và viền dưới cố định (độ dài 70 ký tự)
-	topBorder    := "┌────────────────────────────────────────────────────────────────────┐"
-	bottomBorder := "└────────────────────────────────────────────────────────────────────┘"
+	content := fmt.Sprintf("│ ▶ TEST %d: %s ", TEST_ID, title)
 
-	// 2. Định dạng nội dung bên trong:
-	// "│ ▶ TEST %d: %-52s │" -> %-52s giúp tự động thêm khoảng trắng vào bên phải tiêu đề
-	// Số 52 được căn chỉnh để bù trừ chính xác cho độ rộng hiển thị của emoji `▶`
-	content := fmt.Sprintf("│ ▶ TEST %d: %-52s │", TEST_ID, title)
+	lineLength := len([]rune(content))
 
-	// 3. In ra màn hình với màu xanh lá
+	topBorder := "┌"
+	bottomBorder := "└"
+	for i := 0; i < lineLength-1; i++ {
+		topBorder += "─"
+		bottomBorder += "─"
+	}
+	topBorder += "┐"
+	bottomBorder += "┘"
+
+	content += "│"
+
 	fmt.Println(green + topBorder + reset)
 	fmt.Println(green + content + reset)
 	fmt.Println(green + bottomBorder + reset)
 
 	TEST_ID++
 }
+
 func testBasicConsoleLogging() {
 	buildHeader("Basic Console Logging")
 
@@ -142,9 +147,7 @@ func testCustomLogger() {
 	fileLog.Info("✅ Custom file logger - info")
 	fileLog.Warn("⚠️ Custom file logger - warn")
 	fileLog.Error("❌ Custom file logger - error")
-
 	_ = fileLog.Sync()
-	logger.Info("📁 Check logs/custom.log for custom logger output")
 }
 
 func testLogLevelFiltering() {
