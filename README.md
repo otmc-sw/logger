@@ -10,6 +10,8 @@ A simple, high-performance logging library for Go applications, designed for CLI
 - **Multiple Formatters** - Pretty (default), Text, and JSON
 - **Log Levels** - TRACE, DEBUG, INFO, WARN, ERROR, CRIT
 - **Caller Information** - Automatically captures function, file, and line number
+- **Runtime Configuration** - Change settings at runtime without restart
+- **Multiple Logger Instances** - Create independent loggers with different configs
 - **Thread-Safe** - Safe for concurrent use
 - **Production Ready** - Default configuration optimized for production
 
@@ -60,21 +62,95 @@ The logger automatically formats output with timestamps, caller information, and
 
 ## ⚙️ Configuration
 
-### 🛠️ Using Functional Options
+### 🛠️ Creating a Logger
 
 ```go
+// With no options — uses default config (console, InfoLevel, caller on)
+log := logger.New()
+
+// With one or more options
 log := logger.New(
     logger.WithLevel(logger.DebugLevel),
     logger.WithConsole(),
     logger.WithFile("logs/app.log"),
     logger.WithJSON(),
-    logger.WithCaller(true),
+    logger.WithCaller(false),
     logger.WithMaxSize(20),
     logger.WithMaxBackups(3),
     logger.WithMaxAge(30),
     logger.WithCompress(true),
+    logger.WithTimeFormat(time.RFC3339),
 )
 ```
+
+### 🔄 Runtime Configuration
+
+The logger supports runtime configuration changes. Most changes can be done
+through `Configure()` or dedicated methods:
+
+#### Configure (batch update)
+
+Apply one or more options at once. This is the recommended way to change
+settings that affect the formatter or writer (JSON toggle, file path, etc.).
+
+```go
+log.Configure(
+    logger.WithJSON(),
+    logger.WithFile("logs/app.log"),
+    logger.WithCaller(false),
+)
+
+// Global
+logger.Configure(
+    logger.WithLevel(logger.DebugLevel),
+    logger.WithJSON(),
+)
+```
+
+#### SetLevel (single update — no rebuild)
+
+Changing the log level is the most frequent operation and does not require
+recreating the logger internals.
+
+```go
+log.SetLevel(logger.DebugLevel)
+
+// Global
+logger.SetLevel(logger.WarnLevel)
+```
+
+#### Config / Update (round-trip)
+
+Get a copy of the current config, modify it, and apply it back.
+
+```go
+cfg := log.Config()
+cfg.Level = logger.DebugLevel
+cfg.JSON = true
+cfg.Filename = "logs/app.log"
+log.Update(cfg)
+
+// Global
+cfg := logger.GetConfig()
+cfg.Console = true
+logger.Update(cfg)
+```
+
+### Available Options
+
+| Option | Default | Description |
+|---|---|---|
+| `WithLevel(level)` | `InfoLevel` | Minimum log level |
+| `WithConsole(enabled)` | `true` | Enable/disable console output |
+| `WithFile(filename)` | `""` | Enable file output with rotation |
+| `WithJSON(enabled)` | `false` | JSON format instead of pretty |
+| `WithCaller(enabled)` | `true` | Include caller info (file:line) |
+| `WithStacktrace(enabled)` | `false` | Include stack trace on errors |
+| `WithMaxSize(mb)` | `10` | Max file size before rotation (MB) |
+| `WithMaxBackups(n)` | `3` | Max rotated files to keep |
+| `WithMaxAge(days)` | `90` | Max age of rotated files (days) |
+| `WithCompress(enabled)` | `true` | Compress rotated files |
+| `WithTimeFormat(format)` | `"2006-01-02 15:04:05.000 -07:00"` | Time format string |
 
 ## 📊 Log Levels
 
@@ -84,7 +160,7 @@ logger.Debug("Debug information")
 logger.Info("General informational messages")
 logger.Warn("Warning messages")
 logger.Error("Error messages")
-logger.Crit("Critical errors (exits after logging)")
+logger.Crit("Critical errors — exits after logging")
 ```
 
 ## 🎨 Formatters
@@ -101,14 +177,6 @@ Output:
 ```
 2026-07-06 08:57:34.208 +07:00     Initializer()      main.go:106   | INFO  | 🧩 Loading settings...
 2026-07-06 08:57:34.209 +07:00          Runner()      main.go:154   | INFO  | 🌿 Running application ...
-```
-
-### 📝 Text Formatter
-
-```go
-log := logger.New(
-    logger.WithConsole(),
-)
 ```
 
 ### 📋 JSON Formatter
@@ -134,48 +202,58 @@ Output:
 
 ## 🌍 Global Logger
 
-The library provides a global logger instance for convenience:
+The library provides a global logger instance that mirrors the instance API:
 
 ```go
-// Use global functions
-logger.Info("Message")
-logger.Error("Error: %v", err)
-logger.SetLevel(logger.WarnLevel)
+// Logging
+logger.Trace("...")
+logger.Debug("...")
+logger.Info("...")
+logger.Warn("...")
+logger.Error("...")
+logger.Crit("...")
+
+// Request logging
+logger.Request("GET", "/api/users", 200, 150*time.Millisecond, "10.0.0.1")
+
+// Configuration
+logger.SetLevel(logger.DebugLevel)
+logger.Configure(logger.WithJSON(), logger.WithFile("app.log"))
+logger.Update(cfg)
+cfg := logger.GetConfig()
 ```
 
-## 🔧 Custom Logger
+## 🔧 Custom Logger Instances
 
-Create multiple logger instances with different configurations:
+Create independent logger instances with different configurations:
 
 ```go
-// Global logger
-logger.SetLevel(logger.DebugLevel)
-
-logger.Info("This is a global log")
-
-// Console logger
+// Console logger — debug level, pretty format
 consoleLog := logger.New(
     logger.WithConsole(),
     logger.WithLevel(logger.DebugLevel),
 )
-
 consoleLog.Info("This is a console log")
+consoleLog.SetLevel(logger.TraceLevel)
 
-// File logger
+// File logger — info level, rotated files
 fileLog := logger.New(
     logger.WithFile("logs/app.log"),
     logger.WithLevel(logger.InfoLevel),
+    logger.WithMaxSize(20),
 )
-
 fileLog.Info("This is a file log")
 
-// JSON logger for monitoring
+// JSON logger — for structured monitoring
 jsonLog := logger.New(
-    logger.WithFile("logs/metrics.log"),
+    logger.WithFile("logs/metrics.json"),
     logger.WithJSON(),
+    logger.WithCaller(false),
 )
+jsonLog.Info("This is a JSON log for metrics")
 
-jsonLog.Info("This is a JSON log")
+// Change settings at runtime
+jsonLog.Configure(logger.WithCaller(true))
 ```
 
 ## ♻️ Log Rotation
@@ -183,10 +261,13 @@ jsonLog.Info("This is a JSON log")
 Automatic log rotation using lumberjack:
 
 ```go
-logger.WithMaxSize(20)
-logger.WithMaxBackups(3)
-logger.WithMaxAge(30)
-logger.WithCompress(true)
+log := logger.New(
+    logger.WithFile("logs/app.log"),
+    logger.WithMaxSize(20),    // 20 MB per file
+    logger.WithMaxBackups(3),  // keep 3 rotated files
+    logger.WithMaxAge(30),     // keep for 30 days
+    logger.WithCompress(true), // compress rotated files
+)
 ```
 
 ## 🎨 Color Output
@@ -207,9 +288,22 @@ Colors are automatically stripped when writing to files.
 ```
 Application
     ↓
-Logger API (Trace, Debug, Info, Warn, Error, Crit)
+Logger API (Trace, Debug, Info, Warn, Error, Crit, Request)
     ↓
-Core Engine
+┌─────────────────────────────────────┐
+│ Logger struct                       │
+│   ┌─────────┐  ┌──────────────────┐ │
+│   │ Config  │  │ Core             │ │
+│   │ Level   │  │   → Formatter    │ │
+│   │ JSON    │  │   → Writer       │ │
+│   │ Console │  │   → Hooks        │ │
+│   │ File    │  └──────────────────┘ │
+│   │ Caller  │                       │
+│   └─────────┘                       │
+│                                     │
+│   Configure()  SetLevel()           │
+│   Config()     Update()             │
+└─────────────────────────────────────┘
     ↓
 ├── Formatter (Pretty, Text, JSON)
 ├── Writer (Console, File, Multi)
@@ -226,4 +320,3 @@ Copyright (c) 2026 OTMC Softwares.
 - 🌿 Nguyen Van Trung
 - 🌿 Nguyen Thi Hoai
 - 🌿 OTMC Contributors
-

@@ -7,30 +7,32 @@ package logger
 
 import (
 	"time"
+
+	"github.com/otmc-sw/logger/internal"
 )
 
 func Trace(format string, args ...any) {
-	global.Trace(format, args...)
+	global.core.Log(internal.TraceLevel, 3, format, args...)
 }
 
 func Debug(format string, args ...any) {
-	global.Debug(format, args...)
+	global.core.Log(internal.DebugLevel, 3, format, args...)
 }
 
 func Info(format string, args ...any) {
-	global.Info(format, args...)
+	global.core.Log(internal.InfoLevel, 3, format, args...)
 }
 
 func Warn(format string, args ...any) {
-	global.Warn(format, args...)
+	global.core.Log(internal.WarnLevel, 3, format, args...)
 }
 
 func Error(format string, args ...any) {
-	global.Error(format, args...)
+	global.core.Log(internal.ErrorLevel, 3, format, args...)
 }
 
 func Crit(format string, args ...any) {
-	global.Crit(format, args...)
+	global.core.Log(internal.CritLevel, 3, format, args...)
 }
 
 func Request(method, path string, statusCode int, latency time.Duration, clientIP string) {

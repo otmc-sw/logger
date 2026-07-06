@@ -62,27 +62,27 @@ func (l *Logger) SetLevel(level Level) {
 
 
 func (l *Logger) Trace(format string, args ...any) {
-	l.core.Log(internal.TraceLevel, 4, format, args...)
+	l.core.Log(internal.TraceLevel, 3, format, args...)
 }
 
 func (l *Logger) Debug(format string, args ...any) {
-	l.core.Log(internal.DebugLevel, 4, format, args...)
+	l.core.Log(internal.DebugLevel, 3, format, args...)
 }
 
 func (l *Logger) Info(format string, args ...any) {
-	l.core.Log(internal.InfoLevel, 4, format, args...)
+	l.core.Log(internal.InfoLevel, 3, format, args...)
 }
 
 func (l *Logger) Warn(format string, args ...any) {
-	l.core.Log(internal.WarnLevel, 4, format, args...)
+	l.core.Log(internal.WarnLevel, 3, format, args...)
 }
 
 func (l *Logger) Error(format string, args ...any) {
-	l.core.Log(internal.ErrorLevel, 4, format, args...)
+	l.core.Log(internal.ErrorLevel, 3, format, args...)
 }
 
 func (l *Logger) Crit(format string, args ...any) {
-	l.core.Log(internal.CritLevel, 4, format, args...)
+	l.core.Log(internal.CritLevel, 3, format, args...)
 }
 
 func (l *Logger) Request(method, path string, statusCode int, latency time.Duration, clientIP string) {

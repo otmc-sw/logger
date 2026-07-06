@@ -47,19 +47,20 @@ const (
 )
 
 func ColorLevel(level string) string {
+	fmtLevel := fmt.Sprintf(" %-6s", level)
 	switch level {
 	case "TRACE":
-		return ColorWhiteBg + " TRACE " + ColorReset
+		return ColorWhiteBg + fmtLevel + ColorReset
 	case "DEBUG":
-		return ColorCyanBg + " DEBUG " + ColorReset
+		return ColorCyanBg + fmtLevel + ColorReset
 	case "INFO":
-		return ColorBlueBg + " INFO  " + ColorReset
+		return ColorBlueBg + fmtLevel + ColorReset
 	case "WARN":
-		return ColorYellowBg + " WARN  " + ColorReset
+		return ColorYellowBg + fmtLevel + ColorReset
 	case "ERROR":
-		return ColorRedBg + " ERROR " + ColorReset
+		return ColorRedBg + fmtLevel + ColorReset
 	case "CRIT":
-		return ColorBrightRedBg + " CRIT  " + ColorReset
+		return ColorBrightRedBg + fmtLevel + ColorReset
 	default:
 		return "UNKNOWN"
 	}
@@ -95,7 +96,7 @@ func ColorMessage(level string, message string) string {
 }
 
 func ColorMethod(method string) string {
-	formattedMethod := fmt.Sprintf("%-7s", method)
+	formattedMethod := fmt.Sprintf(" %-7s", method)
 	switch method {
 	case "GET":
 		return ColorBlueBg + formattedMethod + ColorReset
