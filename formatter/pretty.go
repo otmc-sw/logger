@@ -31,15 +31,27 @@ func (f *PrettyFormatter) Format(entry internal.Entry) string {
 		message = internal.ColorMessage(entry.Level.String(), message)
 	}
 
-	return fmt.Sprintf(
-		"%s %20.20s() %15.15s:%-5d |%s| %s\n",
-		timestamp,
-		entry.Function,
-		entry.File,
-		entry.Line,
-		levelStr,
-		message,
-	)
+	var formatted string
+	if entry.Function != "" || entry.File != "" || entry.Line != 0 {
+		formatted = fmt.Sprintf(
+			"%s %20.20s() %15.15s:%-5d |%s| %s\n",
+			timestamp,
+			entry.Function,
+			entry.File,
+			entry.Line,
+			levelStr,
+			message,
+		)
+	} else {
+		formatted = fmt.Sprintf(
+			"%s |%s| %s\n",
+			timestamp,
+			levelStr,
+			message,
+		)
+	}
+
+	return formatted
 }
 
 func (f *PrettyFormatter) FormatRequest(req internal.Request) string {
