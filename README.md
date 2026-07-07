@@ -258,7 +258,7 @@ jsonLog.Configure(logger.WithCaller(true))
 
 ## ♻️ Log Rotation
 
-Automatic log rotation using lumberjack:
+Automatic log rotation using the built-in rotator package:
 
 ```go
 log := logger.New(
@@ -269,6 +269,14 @@ log := logger.New(
     logger.WithCompress(true), // compress rotated files
 )
 ```
+
+The rotator package is lightweight, dependency-free, and supports:
+- Configurable naming strategies (index, date, timestamp, or custom)
+- Gzip compression
+- Automatic cleanup by count and age
+- Thread-safe concurrent writes
+
+For advanced usage, see the [rotator package documentation](https://github.com/otmc-sw/logger/tree/main/rotator).
 
 ## 🎨 Color Output
 

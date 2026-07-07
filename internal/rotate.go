@@ -5,34 +5,32 @@
 **/
 package internal
 
-import (
-	"gopkg.in/natefinch/lumberjack.v2"
-)
+import "github.com/otmc-sw/logger/rotator"
 
 type RotateWriter struct {
-	lumberjack *lumberjack.Logger
+	rotator *rotator.Rotator
 }
 
 func NewRotateWriter(filename string, maxSize, maxBackups, maxAge int, compress bool) *RotateWriter {
-	lj := &lumberjack.Logger{
-		Filename:   filename,
-		MaxSize:    maxSize,
-		MaxBackups: maxBackups,
-		MaxAge:     maxAge,
-		Compress:   compress,
-	}
-	return &RotateWriter{lumberjack: lj}
+	r := rotator.New(
+		rotator.WithFilename(filename),
+		rotator.WithMaxSize(maxSize),
+		rotator.WithMaxBackups(maxBackups),
+		rotator.WithMaxAge(maxAge),
+		rotator.WithCompress(compress),
+	)
+	return &RotateWriter{rotator: r}
 }
 
 func (w *RotateWriter) Write(p []byte) (n int, err error) {
 	stripped := StripColorCodes(string(p))
-	return w.lumberjack.Write([]byte(stripped))
+	return w.rotator.Write([]byte(stripped))
 }
 
 func (w *RotateWriter) Sync() error {
-	return w.lumberjack.Rotate()
+	return w.rotator.Rotate()
 }
 
 func (w *RotateWriter) Close() error {
-	return w.lumberjack.Close()
+	return w.rotator.Close()
 }
