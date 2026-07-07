@@ -36,3 +36,12 @@ func (w *MultiWriter) Sync() error {
 	}
 	return nil
 }
+
+func (w *MultiWriter) Close() error {
+	for _, writer := range w.writers {
+		if err := writer.Close(); err != nil {
+			return err
+		}
+	}
+	return nil
+}

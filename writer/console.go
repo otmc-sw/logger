@@ -25,3 +25,7 @@ func (w *ConsoleWriter) Write(p []byte) (n int, err error) {
 func (w *ConsoleWriter) Sync() error {
 	return nil
 }
+
+func (w *ConsoleWriter) Close() error {
+	return nil
+}

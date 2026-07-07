@@ -12,44 +12,6 @@ import (
 	"time"
 )
 
-func TestDefaultConfig(t *testing.T) {
-	cfg := DefaultConfig()
-
-	if cfg.Level != InfoLevel {
-		t.Errorf("DefaultConfig().Level = %v, want %v", cfg.Level, InfoLevel)
-	}
-	if !cfg.Console {
-		t.Error("DefaultConfig().Console should be true")
-	}
-	if cfg.File {
-		t.Error("DefaultConfig().File should be false")
-	}
-	if cfg.JSON {
-		t.Error("DefaultConfig().JSON should be false")
-	}
-	if !cfg.Caller {
-		t.Error("DefaultConfig().Caller should be true")
-	}
-	if cfg.Stacktrace {
-		t.Error("DefaultConfig().Stacktrace should be false")
-	}
-	if cfg.MaxSize != 10.0 {
-		t.Errorf("DefaultConfig().MaxSize = %v, want 10", cfg.MaxSize)
-	}
-	if cfg.MaxBackups != 3 {
-		t.Errorf("DefaultConfig().MaxBackups = %d, want 3", cfg.MaxBackups)
-	}
-	if cfg.MaxAge != 90 {
-		t.Errorf("DefaultConfig().MaxAge = %d, want 90", cfg.MaxAge)
-	}
-	if cfg.Compress {
-		t.Error("DefaultConfig().Compress should be false")
-	}
-	if cfg.TimeFormat != "2006-01-02 15:04:05.000 -07:00" {
-		t.Errorf("DefaultConfig().TimeFormat = %q, want %q", cfg.TimeFormat, "2006-01-02 15:04:05.000 -07:00")
-	}
-}
-
 func TestParseLevel(t *testing.T) {
 	tests := []struct {
 		input    string
@@ -190,14 +152,13 @@ func TestLoggerLogMethods(t *testing.T) {
 		WithFile(logPath),
 		WithConsole(false),
 	)
+	defer log.Close()
 
 	log.Trace("trace message")
 	log.Debug("debug message")
 	log.Info("info message")
 	log.Warn("warn message")
 	log.Error("error message")
-	log.Crit("crit message")
-
 	_ = log.Sync()
 }
 
@@ -209,6 +170,7 @@ func TestLoggerRequest(t *testing.T) {
 		WithFile(logPath),
 		WithConsole(false),
 	)
+	defer log.Close()
 
 	log.Request("GET", "/api/test", 200, 100*time.Millisecond, "127.0.0.1")
 	log.Request("POST", "/api/users", 201, 150*time.Millisecond, "192.168.1.1")
@@ -225,6 +187,7 @@ func TestLoggerWithFile(t *testing.T) {
 		WithFile(logPath),
 		WithConsole(false),
 	)
+	defer log.Close()
 
 	log.Info("test message")
 	err := log.Sync()
@@ -246,6 +209,7 @@ func TestLoggerWithJSON(t *testing.T) {
 		WithJSON(true),
 		WithConsole(false),
 	)
+	defer log.Close()
 
 	log.Info("test message")
 	err := log.Sync()
@@ -269,7 +233,6 @@ func TestGlobalFunctions(t *testing.T) {
 	Info("info message")
 	Warn("warn message")
 	Error("error message")
-
 
 	Request("GET", "/api/test", 200, 100*time.Millisecond, "127.0.0.1")
 

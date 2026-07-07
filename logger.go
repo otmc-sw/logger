@@ -98,6 +98,10 @@ func (l *Logger) Sync() error {
 	return l.core.Sync()
 }
 
+func (l *Logger) Close() error {
+	return l.core.Close()
+}
+
 func (l *Logger) reconfigure(fn func(*Config), rebuild bool) {
 	l.mu.Lock()
 	defer l.mu.Unlock()

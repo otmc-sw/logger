@@ -118,6 +118,13 @@ func (c *Core) Sync() error {
 	return nil
 }
 
+func (c *Core) Close() error {
+	if c.writer != nil {
+		return c.writer.Close()
+	}
+	return nil
+}
+
 var osExit = func(code int) {
 	os.Exit(code)
 }

@@ -46,6 +46,10 @@ func Sync() error {
 	return global.Sync()
 }
 
+func Close() error {
+	return global.Close()
+}
+
 func SetLevel(level Level) {
 	global.SetLevel(level)
 }

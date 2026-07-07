@@ -28,7 +28,7 @@ switch ($option) {
     }
     "3" {
         Set-Location $PSScriptRoot/..
-        go test ./...
+        go test -v ./...
     }
     default {
         Write-Host "Invalid option" -ForegroundColor Red
