@@ -7,7 +7,7 @@ package core
 
 import (
 	"fmt"
-	"strings"
+	"regexp"
 )
 
 const (
@@ -67,19 +67,8 @@ func ColorLevel(level string) string {
 }
 
 func StripColorCodes(s string) string {
-	s = strings.ReplaceAll(s, ColorReset, "")
-	s = strings.ReplaceAll(s, ColorWhiteBg, "")
-	s = strings.ReplaceAll(s, ColorCyanBg, "")
-	s = strings.ReplaceAll(s, ColorBlueBg, "")
-	s = strings.ReplaceAll(s, ColorYellowBg, "")
-	s = strings.ReplaceAll(s, ColorRedBg, "")
-	s = strings.ReplaceAll(s, ColorBrightRedBg, "")
-	s = strings.ReplaceAll(s, ColorRed, "")
-	s = strings.ReplaceAll(s, ColorYellow, "")
-	s = strings.ReplaceAll(s, ColorGreen, "")
-	s = strings.ReplaceAll(s, ColorWhite, "")
-	s = strings.ReplaceAll(s, ColorBlack, "")
-	return s
+	ansiRegex := regexp.MustCompile(`\033\[[0-9;]*m`)
+	return ansiRegex.ReplaceAllString(s, "")
 }
 
 func ColorMessage(level string, message string) string {

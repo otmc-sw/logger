@@ -5,6 +5,10 @@
  **/
 package writer
 
+import (
+	"bytes"
+)
+
 type MultiWriter struct {
 	writers []Writer
 }
@@ -15,7 +19,8 @@ func NewMultiWriter(writers ...Writer) *MultiWriter {
 
 func (w *MultiWriter) Write(p []byte) (n int, err error) {
 	for _, writer := range w.writers {
-		_, err = writer.Write(p)
+		copied := bytes.Clone(p)
+		_, err = writer.Write(copied)
 		if err != nil {
 			return
 		}

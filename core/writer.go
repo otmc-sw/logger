@@ -24,7 +24,3 @@ func NewConsoleWriter(out io.Writer) *writer.ConsoleWriter {
 func NewMultiWriter(writers ...Writer) *writer.MultiWriter {
 	return writer.NewMultiWriter(writers...)
 }
-
-func NewFileWriter(filename string) (*writer.FileWriter, error) {
-	return writer.NewFileWriter(filename)
-}

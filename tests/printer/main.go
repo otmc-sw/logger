@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/otmc-sw/logger"
@@ -26,7 +25,6 @@ func main() {
 	testCustomLogger()
 	testLogLevelFiltering()
 	testRequest()
-	testRotate()
 	_ = logger.Sync()
 
 	testCrit()
@@ -96,8 +94,6 @@ func testFileLogging() {
 
 	logger.Info("📁 Check logs/test.log for file output")
 	_ = logger.Sync()
-
-	logger.Configure(logger.WithConsole(true))
 }
 
 func testJSONLogging() {
@@ -107,8 +103,8 @@ func testJSONLogging() {
 	logger.Info("✅ JSON formatted message")
 	logger.Warn("⚠️ JSON warning message")
 	logger.Error("❌ JSON error message")
-
 	logger.Info("📁 Check logs/test.json for JSON output")
+
 	_ = logger.Sync()
 
 	logger.Configure(logger.WithJSON(false), logger.WithConsole(true))
@@ -130,6 +126,7 @@ func testCustomLogger() {
 	logPath, _ := filepath.Abs("logs/custom.log")
 	fileLog := logger.New(
 		logger.WithFile(logPath),
+		logger.WithConsole(false),
 	)
 
 	fileLog.Info("✅ Custom file logger - info")
@@ -156,8 +153,6 @@ func testLogLevelFiltering() {
 	logger.Info("✅ This info should NOT appear")
 	logger.Warn("⚠️ This warn should NOT appear")
 	logger.Error("❌ This error SHOULD appear")
-
-	logger.SetLevel(logger.InfoLevel)
 }
 
 func testRequest() {
@@ -174,24 +169,4 @@ func testRequest() {
 func testCrit() {
 	buildHeader("Critical Logging")
 	logger.Crit("💥 This crit SHOULD appear and program will exit")
-}
-
-func testRotate() {
-	buildHeader("Log Rotation")
-	data := make([]byte, 900*1024)
-	_ = os.WriteFile("logs/rotated.log", data, 0644)
-	rotatedLogger := logger.New(
-		logger.WithFile("logs/rotated.log"),
-		logger.WithConsole(false),
-		logger.WithMaxSize(1),
-		logger.WithMaxBackups(3),
-		logger.WithMaxAge(30),
-		logger.WithCompress(true),
-	)
-
-	for range 1000 {
-		rotatedLogger.Info("%s", strings.Repeat("A", 200))
-	}
-
-	_ = rotatedLogger.Sync()
 }
