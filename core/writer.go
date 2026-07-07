@@ -2,56 +2,26 @@
  * @License Apache License 2.0
  * @Copyright (c) 2026 OTMC Softwares. OTMC Golang Logger.
  * @Contributors Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
-**/
+ **/
 package core
 
 import (
 	"io"
-	"os"
+
+	"github.com/otmc-sw/logger/writer"
 )
 
-type ConsoleWriter struct {
-	out io.Writer
+// Writer defines the interface for log output destinations.
+// Reuses writer.Writer to avoid duplication.
+type Writer = writer.Writer
+
+// NewConsoleWriter creates a new ConsoleWriter that writes to the given output.
+// If out is nil, defaults to os.Stdout.
+func NewConsoleWriter(out io.Writer) *writer.ConsoleWriter {
+	return writer.NewConsoleWriter(out)
 }
 
-func NewConsoleWriter(out io.Writer) *ConsoleWriter {
-	if out == nil {
-		out = os.Stdout
-	}
-	return &ConsoleWriter{out: out}
-}
-
-func (w *ConsoleWriter) Write(p []byte) (n int, err error) {
-	return w.out.Write(p)
-}
-
-func (w *ConsoleWriter) Sync() error {
-	return nil
-}
-
-type MultiWriter struct {
-	writers []Writer
-}
-
-func NewMultiWriter(writers ...Writer) *MultiWriter {
-	return &MultiWriter{writers: writers}
-}
-
-func (w *MultiWriter) Write(p []byte) (n int, err error) {
-	for _, writer := range w.writers {
-		_, err = writer.Write(p)
-		if err != nil {
-			return
-		}
-	}
-	return len(p), nil
-}
-
-func (w *MultiWriter) Sync() error {
-	for _, writer := range w.writers {
-		if err := writer.Sync(); err != nil {
-			return err
-		}
-	}
-	return nil
+// NewMultiWriter creates a new MultiWriter that duplicates writes to all provided writers.
+func NewMultiWriter(writers ...Writer) *writer.MultiWriter {
+	return writer.NewMultiWriter(writers...)
 }

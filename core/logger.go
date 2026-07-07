@@ -7,22 +7,20 @@ package core
 
 import (
 	"fmt"
-	"io"
 	"os"
-	"sync"
 	"time"
 )
 
-type Level int
-
-const (
-	TraceLevel Level = iota
-	DebugLevel
-	InfoLevel
-	WarnLevel
-	ErrorLevel
-	CritLevel
-)
+func NewCore(level Level, caller bool, formatter Formatter, writer Writer) *Core {
+	return &Core{
+		level:     level,
+		enabled:   true,
+		caller:    caller,
+		formatter: formatter,
+		writer:    writer,
+		hooks:     make([]Hook, 0),
+	}
+}
 
 func (l Level) String() string {
 	switch l {
@@ -40,59 +38,6 @@ func (l Level) String() string {
 		return "CRIT"
 	default:
 		return "UNKNOWN"
-	}
-}
-
-type Entry struct {
-	Time     time.Time
-	Level    Level
-	Function string
-	File     string
-	Line     int
-	Message  string
-}
-
-type Request struct {
-	Time       time.Time
-	Method     string
-	Path       string
-	StatusCode int
-	Latency    time.Duration
-	ClientIP   string
-}
-
-type Formatter interface {
-	Format(entry Entry) string
-	FormatRequest(req Request) string
-}
-
-type Writer interface {
-	io.Writer
-	Sync() error
-}
-
-type Hook interface {
-	Fire(entry Entry) error
-}
-
-type Core struct {
-	mu        sync.Mutex
-	level     Level
-	enabled   bool
-	caller    bool
-	formatter Formatter
-	writer    Writer
-	hooks     []Hook
-}
-
-func NewCore(level Level, caller bool, formatter Formatter, writer Writer) *Core {
-	return &Core{
-		level:     level,
-		enabled:   true,
-		caller:    caller,
-		formatter: formatter,
-		writer:    writer,
-		hooks:     make([]Hook, 0),
 	}
 }
 
