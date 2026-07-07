@@ -220,6 +220,15 @@ func (r *Rotator) shiftBackupsLocked(dir, baseName, ext string) {
 	})
 
 	for _, b := range backups {
-		_ = os.Rename(b.oldPath, b.newPath)
+		if err := os.Rename(b.oldPath, b.newPath); err != nil {
+			continue
+		}
+
+		if r.config.Compress {
+			compressPath := b.newPath + ".gz"
+			if err := compressFile(b.newPath, compressPath); err == nil {
+				_ = os.Remove(b.newPath)
+			}
+		}
 	}
 }

@@ -28,15 +28,24 @@ func main() {
 		os.Exit(1)
 	}
 
-	logFile := filepath.Join(logDir, "app.log")
+	logFileXX := filepath.Join(logDir, "rotator_xx.log")
+	logFileYY := filepath.Join(logDir, "rotator_yy.log")
 
-	log := logger.New(
-		logger.WithFile(logFile),
+	logger1 := logger.New(
+		logger.WithFile(logFileXX),
 		logger.WithMaxSize(0.1),
 		logger.WithCompress(false),
 		logger.WithConsole(false),
 	)
-	defer log.Sync()
+	defer logger1.Sync()
+
+	logger2 := logger.New(
+		logger.WithFile(logFileYY),
+		logger.WithMaxSize(0.1),
+		logger.WithCompress(true),
+		logger.WithConsole(false),
+	)
+	defer logger2.Sync()
 
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
@@ -59,15 +68,15 @@ loop:
 
 			switch randomInt(0, 3) {
 			case 0:
-				log.Info("Request processed: method=%s path=/api/%s status=%d duration=%dms client=%s",
+				logger1.Info("Request processed: method=%s path=/api/%s status=%d duration=%dms client=%s",
 					randomAction(), randomString(8), randomStatus(), randomInt(10, 500), randomIP())
 			case 1:
-				log.Debug("Cache lookup: key=%s hit=%v ttl=%ds", randomString(12), randomBool(), randomInt(30, 3600))
+				logger1.Debug("Cache lookup: key=%s hit=%v ttl=%ds", randomString(12), randomBool(), randomInt(30, 3600))
 			case 2:
-				log.Warn("Slow query detected: query_id=%s duration=%dms threshold=%dms",
+				logger2.Warn("Slow query detected: query_id=%s duration=%dms threshold=%dms",
 					randomString(8), randomInt(500, 3000), 500)
 			case 3:
-				log.Error("Failed to process request: request_id=%s error=%s retry=%d",
+				logger2.Error("Failed to process request: request_id=%s error=%s retry=%d",
 					randomString(8), randomError(), randomInt(0, 3))
 			}
 
@@ -116,7 +125,6 @@ func printLogFiles(dir string) {
 		fmt.Printf("    %-30s %8.3f MB\n", entry.Name(), sizeMB)
 	}
 }
-
 
 var actions = []string{"GET", "POST", "PUT", "DELETE", "PATCH"}
 
