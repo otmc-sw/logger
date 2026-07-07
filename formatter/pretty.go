@@ -76,7 +76,7 @@ func (f *PrettyFormatter) FormatRequest(req internal.Request) string {
 	}
 
 	return fmt.Sprintf(
-		"%s |%s| %s | %s | %-15s | %s\n",
+		"%s |%s| %12s | %s | %-15s | %s\n",
 		timestamp,
 		method,
 		latency,

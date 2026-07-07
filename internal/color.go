@@ -133,9 +133,9 @@ func ColorStatusCode(code int) string {
 }
 
 func ColorTime(timeStr string) string {
-	return ColorCyan + fmt.Sprintf("%6s", timeStr) + ColorReset
+	return ColorCyan + fmt.Sprintf("%s", timeStr) + ColorReset
 }
 
 func ColorLatency(latency string) string {
-	return ColorBlue + fmt.Sprintf("%6s", latency) + ColorReset
+	return ColorBlue + fmt.Sprintf("%12s", latency) + ColorReset
 }
