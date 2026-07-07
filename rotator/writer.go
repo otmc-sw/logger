@@ -223,7 +223,3 @@ func (r *Rotator) shiftBackupsLocked(dir, baseName, ext string) {
 		_ = os.Rename(b.oldPath, b.newPath)
 	}
 }
-
-func (r *Rotator) findNextIndexLocked() int {
-	return 1
-}

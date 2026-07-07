@@ -4,5 +4,28 @@
 # Contributors: Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
 #
 
-Set-Location $PSScriptRoot/..
-go run tests/printer/main.go
+Write-Host '╔══════════════════════════════════════════════════╗' -ForegroundColor Cyan
+Write-Host '║              Test Manager v1.0                   ║' -ForegroundColor Cyan
+Write-Host '╚══════════════════════════════════════════════════╝' -ForegroundColor Cyan
+Write-Host "  1. Print logs" -ForegroundColor Green
+Write-Host "  2. Rotate logs" -ForegroundColor Green
+Write-Host "  3. Go test ./..." -ForegroundColor Green
+$option = Read-Host ">> Select option (1-3)"
+
+switch ($option) {
+    "1" {
+        Set-Location $PSScriptRoot/..
+        go run tests/printer/main.go
+    }
+    "2" {
+        Set-Location $PSScriptRoot/..
+        go run tests/rotator/main.go
+    }
+    "3" {
+        Set-Location $PSScriptRoot/..
+        go test ./...
+    }
+    default {
+        Write-Host "Invalid option"
+    }
+}

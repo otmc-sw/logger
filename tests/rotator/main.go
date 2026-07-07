@@ -33,8 +33,6 @@ func main() {
 	log := logger.New(
 		logger.WithFile(logFile),
 		logger.WithMaxSize(0.1),
-		logger.WithMaxBackups(3),
-		logger.WithMaxAge(7),
 		logger.WithCompress(false),
 		logger.WithConsole(false),
 	)

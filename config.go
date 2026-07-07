@@ -32,7 +32,7 @@ func DefaultConfig() Config {
 		MaxSize:    10,
 		MaxBackups: 3,
 		MaxAge:     90,
-		Compress:   false,
+		Compress:   true,
 		TimeFormat: "2006-01-02 15:04:05.000 -07:00",
 	}
 }
