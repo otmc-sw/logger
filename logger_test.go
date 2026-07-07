@@ -33,8 +33,8 @@ func TestDefaultConfig(t *testing.T) {
 	if cfg.Stacktrace {
 		t.Error("DefaultConfig().Stacktrace should be false")
 	}
-	if cfg.MaxSize != 10 {
-		t.Errorf("DefaultConfig().MaxSize = %d, want 10", cfg.MaxSize)
+	if cfg.MaxSize != 10.0 {
+		t.Errorf("DefaultConfig().MaxSize = %v, want 10", cfg.MaxSize)
 	}
 	if cfg.MaxBackups != 3 {
 		t.Errorf("DefaultConfig().MaxBackups = %d, want 3", cfg.MaxBackups)
@@ -42,8 +42,8 @@ func TestDefaultConfig(t *testing.T) {
 	if cfg.MaxAge != 90 {
 		t.Errorf("DefaultConfig().MaxAge = %d, want 90", cfg.MaxAge)
 	}
-	if !cfg.Compress {
-		t.Error("DefaultConfig().Compress should be true")
+	if cfg.Compress {
+		t.Error("DefaultConfig().Compress should be false")
 	}
 	if cfg.TimeFormat != "2006-01-02 15:04:05.000 -07:00" {
 		t.Errorf("DefaultConfig().TimeFormat = %q, want %q", cfg.TimeFormat, "2006-01-02 15:04:05.000 -07:00")
@@ -143,7 +143,7 @@ func TestLoggerUpdate(t *testing.T) {
 		JSON:       false,
 		Caller:     false,
 		Stacktrace: false,
-		MaxSize:    5,
+		MaxSize:    5.0,
 		MaxBackups: 2,
 		MaxAge:     30,
 		Compress:   false,
@@ -159,8 +159,8 @@ func TestLoggerUpdate(t *testing.T) {
 	if cfg.Console {
 		t.Error("Update().Console should be false")
 	}
-	if cfg.MaxSize != 5 {
-		t.Errorf("Update().MaxSize = %d, want 5", cfg.MaxSize)
+	if cfg.MaxSize != 5.0 {
+		t.Errorf("Update().MaxSize = %v, want 5", cfg.MaxSize)
 	}
 }
 
@@ -328,7 +328,7 @@ func TestGlobalUpdate(t *testing.T) {
 		JSON:       false,
 		Caller:     false,
 		Stacktrace: false,
-		MaxSize:    5,
+		MaxSize:    5.0,
 		MaxBackups: 2,
 		MaxAge:     30,
 		Compress:   false,
@@ -341,8 +341,8 @@ func TestGlobalUpdate(t *testing.T) {
 	if cfg.Level != WarnLevel {
 		t.Errorf("Update().Level = %v, want %v", cfg.Level, WarnLevel)
 	}
-	if cfg.MaxSize != 5 {
-		t.Errorf("Update().MaxSize = %d, want 5", cfg.MaxSize)
+	if cfg.MaxSize != 5.0 {
+		t.Errorf("Update().MaxSize = %v, want 5", cfg.MaxSize)
 	}
 }
 
@@ -411,11 +411,11 @@ func TestWithStacktrace(t *testing.T) {
 
 func TestWithMaxSize(t *testing.T) {
 	cfg := DefaultConfig()
-	opt := WithMaxSize(100)
+	opt := WithMaxSize(100.0)
 	opt(&cfg)
 
-	if cfg.MaxSize != 100 {
-		t.Errorf("WithMaxSize() = %d, want 100", cfg.MaxSize)
+	if cfg.MaxSize != 100.0 {
+		t.Errorf("WithMaxSize() = %v, want 100", cfg.MaxSize)
 	}
 }
 
@@ -466,7 +466,7 @@ func TestMultipleOptions(t *testing.T) {
 	WithConsole(false)(&cfg)
 	WithCaller(false)(&cfg)
 	WithJSON(true)(&cfg)
-	WithMaxSize(50)(&cfg)
+	WithMaxSize(50.0)(&cfg)
 
 	if cfg.Level != DebugLevel {
 		t.Errorf("Multiple options: Level = %v, want %v", cfg.Level, DebugLevel)
@@ -480,7 +480,7 @@ func TestMultipleOptions(t *testing.T) {
 	if !cfg.JSON {
 		t.Error("Multiple options: JSON should be true")
 	}
-	if cfg.MaxSize != 50 {
-		t.Errorf("Multiple options: MaxSize = %d, want 50", cfg.MaxSize)
+	if cfg.MaxSize != 50.0 {
+		t.Errorf("Multiple options: MaxSize = %v, want 50", cfg.MaxSize)
 	}
 }

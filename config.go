@@ -14,7 +14,7 @@ type Config struct {
 	JSON       bool
 	Caller     bool
 	Stacktrace bool
-	MaxSize    int
+	MaxSize    float64
 	MaxBackups int
 	MaxAge     int
 	Compress   bool

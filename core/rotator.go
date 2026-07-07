@@ -11,7 +11,7 @@ type RotateWriter struct {
 	rotator *rotator.Rotator
 }
 
-func NewRotateWriter(filename string, maxSize, maxBackups, maxAge int, compress bool) *RotateWriter {
+func NewRotateWriter(filename string, maxSize float64, maxBackups, maxAge int, compress bool) *RotateWriter {
 	r := rotator.New(
 		rotator.WithFilename(filename),
 		rotator.WithMaxSize(maxSize),

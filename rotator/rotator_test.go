@@ -19,9 +19,9 @@ func TestNew(t *testing.T) {
 
 	r := New(
 		WithFilename(filename),
-		WithMaxSize(1),
-		WithMaxBackups(3),
-		WithMaxAge(7),
+		WithMaxSize(0.2),
+		WithMaxBackups(5),
+		WithMaxAge(90),
 		WithCompress(false),
 	)
 
@@ -69,7 +69,7 @@ func TestRotation(t *testing.T) {
 
 	r := New(
 		WithFilename(filename),
-		WithMaxSize(1),
+		WithMaxSize(0.2),
 		WithMaxBackups(2),
 		WithCompress(false),
 	)
@@ -404,18 +404,19 @@ func TestParseFilename(t *testing.T) {
 
 func TestMegabytesToBytes(t *testing.T) {
 	tests := []struct {
-		mb    int
+		mb    float64
 		bytes int64
 	}{
 		{1, 1024 * 1024},
 		{10, 10 * 1024 * 1024},
 		{100, 100 * 1024 * 1024},
+		{0.5, 512 * 1024},
 	}
 
 	for _, tt := range tests {
 		result := megabytesToBytes(tt.mb)
 		if result != tt.bytes {
-			t.Errorf("megabytesToBytes(%d) = %d, want %d", tt.mb, result, tt.bytes)
+			t.Errorf("megabytesToBytes(%v) = %d, want %d", tt.mb, result, tt.bytes)
 		}
 	}
 }

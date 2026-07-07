@@ -21,8 +21,8 @@ func parseFilename(filename string) (base, ext string) {
 	return
 }
 
-func megabytesToBytes(mb int) int64 {
-	return int64(mb) * 1024 * 1024
+func megabytesToBytes(mb float64) int64 {
+	return int64(mb * 1024 * 1024)
 }
 
 func extractIndex(filename, baseName, ext string) int {

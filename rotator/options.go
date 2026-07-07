@@ -13,7 +13,7 @@ func WithFilename(filename string) Option {
 	}
 }
 
-func WithMaxSize(maxSize int) Option {
+func WithMaxSize(maxSize float64) Option {
 	return func(c *Config) {
 		c.MaxSize = maxSize
 	}

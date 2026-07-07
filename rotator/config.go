@@ -7,9 +7,9 @@ package rotator
 
 type Config struct {
 	Filename   string
-	MaxSize    int // megabytes
-	MaxBackups int // number of backups
-	MaxAge     int // days
+	MaxSize    float64 // megabytes (supports fractional values, e.g. 0.24)
+	MaxBackups int     // number of backups
+	MaxAge     int     // days
 	Compress   bool
 
 	TimeFormat string
@@ -18,7 +18,7 @@ type Config struct {
 
 func defaultConfig() Config {
 	return Config{
-		MaxSize:    100,
+		MaxSize:    10,
 		MaxBackups: 3,
 		MaxAge:     30,
 		Compress:   false,
