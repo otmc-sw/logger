@@ -7,6 +7,7 @@ package core
 
 import (
 	"io"
+	"os"
 
 	"github.com/otmc-sw/logger/writer"
 )
@@ -14,6 +15,9 @@ import (
 type Writer = writer.Writer
 
 func NewConsoleWriter(out io.Writer) *writer.ConsoleWriter {
+	if out == nil {
+		out = os.Stdout
+	}
 	return writer.NewConsoleWriter(out)
 }
 
