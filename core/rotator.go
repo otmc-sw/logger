@@ -28,7 +28,7 @@ func (w *RotateWriter) Write(p []byte) (n int, err error) {
 }
 
 func (w *RotateWriter) Sync() error {
-	return w.rotator.Rotate()
+	return w.rotator.Sync()
 }
 
 func (w *RotateWriter) Close() error {
