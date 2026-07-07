@@ -1,11 +1,10 @@
-/**
+﻿/**
  * @License Apache License 2.0
  * @Copyright (c) 2026 OTMC Softwares. OTMC Golang Logger.
  * @Contributors Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
  **/
 package rotator
 
-// Config holds the rotator configuration.
 type Config struct {
 	Filename   string
 	MaxSize    int // megabytes
@@ -17,12 +16,11 @@ type Config struct {
 	Naming     NamingFunc
 }
 
-// defaultConfig returns the default configuration.
 func defaultConfig() Config {
 	return Config{
-		MaxSize:    100, // 100 MB
+		MaxSize:    100,
 		MaxBackups: 3,
-		MaxAge:     30, // 30 days
+		MaxAge:     30,
 		Compress:   false,
 		TimeFormat: "20060102",
 		Naming:     NameWithIndex,

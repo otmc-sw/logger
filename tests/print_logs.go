@@ -183,7 +183,7 @@ func testRotate() {
 	rotatedLogger := logger.New(
 		logger.WithFile("logs/rotated.log"),
 		logger.WithConsole(false),
-		logger.WithMaxSize(1), // 1MB
+		logger.WithMaxSize(1),
 		logger.WithMaxBackups(3),
 		logger.WithMaxAge(30),
 		logger.WithCompress(true),

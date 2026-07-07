@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @License Apache License 2.0
  * @Copyright (c) 2026 OTMC Softwares. OTMC Golang Logger.
  * @Contributors Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
@@ -31,7 +31,6 @@ func TestNew(t *testing.T) {
 
 	defer r.Close()
 
-	// Check if file was created
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		t.Error("Log file was not created")
 	}
@@ -54,7 +53,6 @@ func TestWrite(t *testing.T) {
 		t.Errorf("Write() wrote %d bytes, expected %d", n, len(data))
 	}
 
-	// Verify file content
 	content, err := os.ReadFile(filename)
 	if err != nil {
 		t.Fatalf("Failed to read log file: %v", err)
@@ -71,13 +69,12 @@ func TestRotation(t *testing.T) {
 
 	r := New(
 		WithFilename(filename),
-		WithMaxSize(1), // 1 MB
+		WithMaxSize(1),
 		WithMaxBackups(2),
 		WithCompress(false),
 	)
 	defer r.Close()
 
-	// Write enough data to trigger rotation (1MB + 1 byte)
 	data := make([]byte, 1024*1024+1)
 	for i := range data {
 		data[i] = 'a'
@@ -88,16 +85,13 @@ func TestRotation(t *testing.T) {
 		t.Fatalf("Write() failed: %v", err)
 	}
 
-	// Give some time for file operations
 	time.Sleep(100 * time.Millisecond)
 
-	// Check if backup file was created
 	files, err := os.ReadDir(tmpDir)
 	if err != nil {
 		t.Fatalf("Failed to read directory: %v", err)
 	}
 
-	// Should have at least the active file and one backup
 	if len(files) < 2 {
 		t.Errorf("Expected at least 2 files after rotation, got %d", len(files))
 	}
@@ -115,7 +109,6 @@ func TestCompression(t *testing.T) {
 	)
 	defer r.Close()
 
-	// Write enough data to trigger rotation
 	data := make([]byte, 1024*1024+1)
 	for i := range data {
 		data[i] = 'a'
@@ -128,7 +121,6 @@ func TestCompression(t *testing.T) {
 
 	time.Sleep(100 * time.Millisecond)
 
-	// Check if compressed backup was created
 	files, err := os.ReadDir(tmpDir)
 	if err != nil {
 		t.Fatalf("Failed to read directory: %v", err)
@@ -159,7 +151,6 @@ func TestMaxBackups(t *testing.T) {
 	)
 	defer r.Close()
 
-	// Trigger multiple rotations
 	for i := 0; i < 4; i++ {
 		data := make([]byte, 1024*1024+1)
 		for j := range data {
@@ -176,13 +167,11 @@ func TestMaxBackups(t *testing.T) {
 
 	time.Sleep(100 * time.Millisecond)
 
-	// Count files (should be maxBackups + 1 for active file)
 	files, err := os.ReadDir(tmpDir)
 	if err != nil {
 		t.Fatalf("Failed to read directory: %v", err)
 	}
 
-	// Should have at most 3 files (2 backups + 1 active)
 	if len(files) > 3 {
 		t.Errorf("Expected at most 3 files with MaxBackups=2, got %d", len(files))
 	}
@@ -199,7 +188,6 @@ func TestClose(t *testing.T) {
 		t.Fatalf("Close() failed: %v", err)
 	}
 
-	// Writing after close should fail
 	_, err = r.Write([]byte("test"))
 	if err != ErrClosed {
 		t.Errorf("Expected ErrClosed after Close(), got %v", err)
@@ -254,13 +242,11 @@ func TestRotate(t *testing.T) {
 	)
 	defer r.Close()
 
-	// Write some data
 	_, err := r.Write([]byte("test data\n"))
 	if err != nil {
 		t.Fatalf("Write() failed: %v", err)
 	}
 
-	// Force rotation
 	err = r.Rotate()
 	if err != nil {
 		t.Fatalf("Rotate() failed: %v", err)
@@ -268,7 +254,6 @@ func TestRotate(t *testing.T) {
 
 	time.Sleep(50 * time.Millisecond)
 
-	// Check if backup was created
 	files, err := os.ReadDir(tmpDir)
 	if err != nil {
 		t.Fatalf("Failed to read directory: %v", err)
@@ -363,7 +348,6 @@ func TestCustomNaming(t *testing.T) {
 	)
 	defer r.Close()
 
-	// Write enough to trigger rotation
 	data := make([]byte, 1024*1024+1)
 	for i := range data {
 		data[i] = 'a'
@@ -376,7 +360,6 @@ func TestCustomNaming(t *testing.T) {
 
 	time.Sleep(100 * time.Millisecond)
 
-	// Check if custom naming was used
 	files, err := os.ReadDir(tmpDir)
 	if err != nil {
 		t.Fatalf("Failed to read directory: %v", err)
@@ -467,7 +450,7 @@ func BenchmarkWrite(b *testing.B) {
 
 	r := New(
 		WithFilename(filename),
-		WithMaxSize(1000), // Large enough to avoid rotation during benchmark
+		WithMaxSize(1000),
 	)
 	defer r.Close()
 
