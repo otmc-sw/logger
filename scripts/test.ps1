@@ -7,10 +7,15 @@
 Write-Host '╔══════════════════════════════════════════════════╗' -ForegroundColor Cyan
 Write-Host '║              Test Manager v1.0                   ║' -ForegroundColor Cyan
 Write-Host '╚══════════════════════════════════════════════════╝' -ForegroundColor Cyan
-Write-Host "  1. Print logs" -ForegroundColor Green
-Write-Host "  2. Rotate logs" -ForegroundColor Green
-Write-Host "  3. Go test ./..." -ForegroundColor Green
-$option = Read-Host ">> Select option (1-3)"
+
+if ($args.Count -gt 0) {
+    $option = $args[0]
+} else {
+    Write-Host "  1. Print logs" -ForegroundColor Green
+    Write-Host "  2. Rotate logs" -ForegroundColor Green
+    Write-Host "  3. Go test ./..." -ForegroundColor Green
+    $option = Read-Host ">> Select option (1-3)"
+}
 
 switch ($option) {
     "1" {
@@ -26,6 +31,6 @@ switch ($option) {
         go test ./...
     }
     default {
-        Write-Host "Invalid option"
+        Write-Host "Invalid option" -ForegroundColor Red
     }
 }
