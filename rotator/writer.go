@@ -8,6 +8,7 @@ package rotator
 import (
 	"os"
 	"path/filepath"
+	"sort"
 	"sync"
 	"time"
 )
@@ -140,18 +141,22 @@ func (r *Rotator) rotateLocked() error {
 		}
 	}
 
+	dir := filepath.Dir(r.config.Filename)
 	baseName, ext := parseFilename(r.config.Filename)
-	index := r.findNextIndexLocked()
 
+	// Shift existing backups: increment index by 1 (newest = .1, oldest = highest)
+	// Scan all backup files, sort by index descending, rename each to index+1
+	r.shiftBackupsLocked(dir, baseName, ext)
+
+	// Now rename current log file to index 1 (newest backup)
 	info := RotateInfo{
 		BaseName:  baseName,
 		Extension: ext,
-		Index:     index,
+		Index:     1,
 		Time:      time.Now(),
 	}
-
 	backupName := r.config.Naming(info)
-	backupPath := filepath.Join(filepath.Dir(r.config.Filename), backupName)
+	backupPath := filepath.Join(dir, backupName)
 
 	if err := os.Rename(r.config.Filename, backupPath); err != nil {
 		if !os.IsNotExist(err) {
@@ -171,30 +176,60 @@ func (r *Rotator) rotateLocked() error {
 	return r.openFile()
 }
 
-func (r *Rotator) findNextIndexLocked() int {
-	dir := filepath.Dir(r.config.Filename)
-	if dir == "" {
-		dir = "."
-	}
-
-	baseName, ext := parseFilename(r.config.Filename)
-
+// shiftBackupsLocked renames existing backups so the newest has index 1.
+// It renames files in descending index order to avoid name collisions.
+func (r *Rotator) shiftBackupsLocked(dir, baseName, ext string) {
 	files, err := os.ReadDir(dir)
 	if err != nil {
-		return 1
+		return
 	}
 
-	maxIndex := 0
+	type backupEntry struct {
+		oldPath string
+		newPath string
+		index   int
+	}
+
+	var backups []backupEntry
+
 	for _, file := range files {
 		if file.IsDir() {
 			continue
 		}
-
 		name := file.Name()
-		if idx := extractIndex(name, baseName, ext); idx > maxIndex {
-			maxIndex = idx
+		if !isBackupFile(name, baseName, ext) {
+			continue
 		}
+
+		idx := extractIndex(name, baseName, ext)
+		if idx == 0 {
+			continue
+		}
+
+		info := RotateInfo{
+			BaseName:  baseName,
+			Extension: ext,
+			Index:     idx + 1,
+			Time:      time.Now(),
+		}
+		newName := r.config.Naming(info)
+		backups = append(backups, backupEntry{
+			oldPath: filepath.Join(dir, name),
+			newPath: filepath.Join(dir, newName),
+			index:   idx,
+		})
 	}
 
-	return maxIndex + 1
+	// Sort by index descending so we rename high indices first (no collisions)
+	sort.Slice(backups, func(i, j int) bool {
+		return backups[i].index > backups[j].index
+	})
+
+	for _, b := range backups {
+		_ = os.Rename(b.oldPath, b.newPath)
+	}
+}
+
+func (r *Rotator) findNextIndexLocked() int {
+	return 1
 }

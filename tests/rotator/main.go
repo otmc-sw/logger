@@ -7,14 +7,13 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"syscall"
 	"time"
 
-	"github.com/otmc-sw/logger/rotator"
+	"github.com/otmc-sw/logger"
 )
 
 func main() {
@@ -26,21 +25,23 @@ func main() {
 	// Create a dedicated log directory
 	logDir := "logs"
 	if err := os.MkdirAll(logDir, 0755); err != nil {
-		log.Fatalf("Failed to create log directory: %v", err)
+		fmt.Fprintf(os.Stderr, "Failed to create log directory: %v\n", err)
+		os.Exit(1)
 	}
 
 	logFile := filepath.Join(logDir, "app.log")
 
-	// Configure the rotator with a small MaxSize (0.24 MB = ~240 KB) to trigger rotation quickly
+	// Configure the logger with a small MaxSize (0.24 MB = ~240 KB) to trigger rotation quickly
 	// MaxBackups=3 keeps at most 3 rotated files, MaxAge=7 days, Compress=false
-	r := rotator.New(
-		rotator.WithFilename(logFile),
-		rotator.WithMaxSize(0.24), // 0.24 MB (~240 KB) – rotate when file exceeds this
-		rotator.WithMaxBackups(3), // keep up to 3 backup files
-		rotator.WithMaxAge(7),     // keep backups for 7 days
-		rotator.WithCompress(false),
+	log := logger.New(
+		logger.WithFile(logFile),
+		logger.WithMaxSize(0.1),  // 0.1 MB (~100 KB) – rotate when file exceeds this
+		logger.WithMaxBackups(3), // keep up to 3 backup files
+		logger.WithMaxAge(7),     // keep backups for 7 days
+		logger.WithCompress(false),
+		logger.WithConsole(false), // disable console output to avoid double output
 	)
-	defer r.Close()
+	defer log.Sync()
 
 	// Channel to listen for OS interrupt signals (Ctrl+C)
 	sigCh := make(chan os.Signal, 1)
@@ -59,27 +60,22 @@ loop:
 	for {
 		select {
 		case <-ticker.C:
-			// Simulate a log entry with timestamp, level, and message
 			elapsed := time.Since(startTime).Truncate(time.Second)
 			lineCount++
 
-			// Generate a log line of roughly 200 bytes
-			logLine := fmt.Sprintf(
-				"[%s] [%s] [%d] request_id=%s user=%s action=%s status=%d duration=%dms payload=%s\n",
-				time.Now().Format(time.RFC3339),
-				randomLevel(),
-				lineCount,
-				randomString(8),
-				randomString(6),
-				randomAction(),
-				randomStatus(),
-				randomInt(10, 500),
-				randomString(20),
-			)
-
-			_, err := r.Write([]byte(logLine))
-			if err != nil {
-				log.Printf("Write error: %v", err)
+			// Simulate realistic log entries using the logger API
+			switch randomInt(0, 3) {
+			case 0:
+				log.Info("Request processed: method=%s path=/api/%s status=%d duration=%dms client=%s",
+					randomAction(), randomString(8), randomStatus(), randomInt(10, 500), randomIP())
+			case 1:
+				log.Debug("Cache lookup: key=%s hit=%v ttl=%ds", randomString(12), randomBool(), randomInt(30, 3600))
+			case 2:
+				log.Warn("Slow query detected: query_id=%s duration=%dms threshold=%dms",
+					randomString(8), randomInt(500, 3000), 500)
+			case 3:
+				log.Error("Failed to process request: request_id=%s error=%s retry=%d",
+					randomString(8), randomError(), randomInt(0, 3))
 			}
 
 			// Print progress every 500 lines
@@ -111,7 +107,7 @@ loop:
 func printLogFiles(dir string) {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
-		log.Printf("Failed to read directory %s: %v", dir, err)
+		fmt.Fprintf(os.Stderr, "Failed to read directory %s: %v\n", dir, err)
 		return
 	}
 
@@ -132,12 +128,6 @@ func printLogFiles(dir string) {
 
 // --- Helpers to simulate realistic log data ---
 
-var levels = []string{"INFO", "WARN", "ERROR", "DEBUG"}
-
-func randomLevel() string {
-	return levels[randomInt(0, len(levels)-1)]
-}
-
 var actions = []string{"GET", "POST", "PUT", "DELETE", "PATCH"}
 
 func randomAction() string {
@@ -145,9 +135,21 @@ func randomAction() string {
 }
 
 func randomStatus() int {
-	// Weighted toward 2xx/3xx, occasional 4xx/5xx
 	weights := []int{200, 201, 204, 301, 302, 400, 401, 403, 404, 500, 502, 503}
 	return weights[randomInt(0, len(weights)-1)]
+}
+
+var errors = []string{
+	"connection refused",
+	"timeout exceeded",
+	"invalid input",
+	"permission denied",
+	"rate limit exceeded",
+	"internal server error",
+}
+
+func randomError() string {
+	return errors[randomInt(0, len(errors)-1)]
 }
 
 // Simple pseudo-random number generator (no external dependency)
@@ -161,6 +163,10 @@ func randomInt(min, max int) int {
 	return min + int(seed%int64(max-min+1))
 }
 
+func randomBool() bool {
+	return randomInt(0, 1) == 1
+}
+
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 func randomString(length int) string {
@@ -169,4 +175,8 @@ func randomString(length int) string {
 		b[i] = charset[randomInt(0, len(charset)-1)]
 	}
 	return string(b)
+}
+
+func randomIP() string {
+	return fmt.Sprintf("%d.%d.%d.%d", randomInt(1, 255), randomInt(0, 255), randomInt(0, 255), randomInt(1, 255))
 }
