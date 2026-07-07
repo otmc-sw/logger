@@ -5,4 +5,4 @@
 #
 
 Set-Location $PSScriptRoot/..
-go run tests/printer.go
+go run tests/printer/main.go

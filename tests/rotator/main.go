@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @License Apache License 2.0
  * @Copyright (c) 2026 OTMC Softwares. OTMC Golang Logger.
  * @Contributors Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
@@ -22,7 +22,6 @@ func main() {
 	fmt.Println("and demonstrates automatic log rotation.")
 	fmt.Println()
 
-	// Create a dedicated log directory
 	logDir := "logs"
 	if err := os.MkdirAll(logDir, 0755); err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to create log directory: %v\n", err)
@@ -31,19 +30,16 @@ func main() {
 
 	logFile := filepath.Join(logDir, "app.log")
 
-	// Configure the logger with a small MaxSize (0.24 MB = ~240 KB) to trigger rotation quickly
-	// MaxBackups=3 keeps at most 3 rotated files, MaxAge=7 days, Compress=false
 	log := logger.New(
 		logger.WithFile(logFile),
-		logger.WithMaxSize(0.1),  // 0.1 MB (~100 KB) – rotate when file exceeds this
-		logger.WithMaxBackups(3), // keep up to 3 backup files
-		logger.WithMaxAge(7),     // keep backups for 7 days
+		logger.WithMaxSize(0.1),
+		logger.WithMaxBackups(3),
+		logger.WithMaxAge(7),
 		logger.WithCompress(false),
-		logger.WithConsole(false), // disable console output to avoid double output
+		logger.WithConsole(false),
 	)
 	defer log.Sync()
 
-	// Channel to listen for OS interrupt signals (Ctrl+C)
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
 
@@ -63,7 +59,6 @@ loop:
 			elapsed := time.Since(startTime).Truncate(time.Second)
 			lineCount++
 
-			// Simulate realistic log entries using the logger API
 			switch randomInt(0, 3) {
 			case 0:
 				log.Info("Request processed: method=%s path=/api/%s status=%d duration=%dms client=%s",
@@ -78,7 +73,6 @@ loop:
 					randomString(8), randomError(), randomInt(0, 3))
 			}
 
-			// Print progress every 500 lines
 			if lineCount%500 == 0 {
 				fmt.Printf("  Wrote %d lines (elapsed: %s)\n", lineCount, elapsed)
 				printLogFiles(logDir)
@@ -103,7 +97,6 @@ loop:
 	fmt.Println("Done.")
 }
 
-// printLogFiles lists all files in the given directory with their sizes.
 func printLogFiles(dir string) {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
@@ -126,7 +119,6 @@ func printLogFiles(dir string) {
 	}
 }
 
-// --- Helpers to simulate realistic log data ---
 
 var actions = []string{"GET", "POST", "PUT", "DELETE", "PATCH"}
 
@@ -152,7 +144,6 @@ func randomError() string {
 	return errors[randomInt(0, len(errors)-1)]
 }
 
-// Simple pseudo-random number generator (no external dependency)
 var seed = time.Now().UnixNano()
 
 func randomInt(min, max int) int {

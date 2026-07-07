@@ -144,11 +144,8 @@ func (r *Rotator) rotateLocked() error {
 	dir := filepath.Dir(r.config.Filename)
 	baseName, ext := parseFilename(r.config.Filename)
 
-	// Shift existing backups: increment index by 1 (newest = .1, oldest = highest)
-	// Scan all backup files, sort by index descending, rename each to index+1
 	r.shiftBackupsLocked(dir, baseName, ext)
 
-	// Now rename current log file to index 1 (newest backup)
 	info := RotateInfo{
 		BaseName:  baseName,
 		Extension: ext,
@@ -176,8 +173,6 @@ func (r *Rotator) rotateLocked() error {
 	return r.openFile()
 }
 
-// shiftBackupsLocked renames existing backups so the newest has index 1.
-// It renames files in descending index order to avoid name collisions.
 func (r *Rotator) shiftBackupsLocked(dir, baseName, ext string) {
 	files, err := os.ReadDir(dir)
 	if err != nil {
@@ -220,7 +215,6 @@ func (r *Rotator) shiftBackupsLocked(dir, baseName, ext string) {
 		})
 	}
 
-	// Sort by index descending so we rename high indices first (no collisions)
 	sort.Slice(backups, func(i, j int) bool {
 		return backups[i].index > backups[j].index
 	})
