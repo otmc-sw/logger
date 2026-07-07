@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @License Apache License 2.0
  * @Copyright (c) 2026 OTMC Softwares. OTMC Golang Logger.
  * @Contributors Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
@@ -191,7 +191,6 @@ func TestLoggerLogMethods(t *testing.T) {
 		WithConsole(false),
 	)
 
-	// These should not panic
 	log.Trace("trace message")
 	log.Debug("debug message")
 	log.Info("info message")
@@ -211,7 +210,6 @@ func TestLoggerRequest(t *testing.T) {
 		WithConsole(false),
 	)
 
-	// Should not panic
 	log.Request("GET", "/api/test", 200, 100*time.Millisecond, "127.0.0.1")
 	log.Request("POST", "/api/users", 201, 150*time.Millisecond, "192.168.1.1")
 	log.Request("DELETE", "/api/users/1", 204, 50*time.Millisecond, "10.0.0.1")
@@ -234,7 +232,6 @@ func TestLoggerWithFile(t *testing.T) {
 		t.Errorf("Sync() returned error: %v", err)
 	}
 
-	// Check if file exists
 	if _, err := os.Stat(logPath); os.IsNotExist(err) {
 		t.Error("Log file was not created")
 	}
@@ -256,28 +253,23 @@ func TestLoggerWithJSON(t *testing.T) {
 		t.Errorf("Sync() returned error: %v", err)
 	}
 
-	// Check if file exists
 	if _, err := os.Stat(logPath); os.IsNotExist(err) {
 		t.Error("Log file was not created")
 	}
 }
 
 func TestGlobalFunctions(t *testing.T) {
-	// Save original config
 	originalCfg := GetConfig()
 	defer Update(originalCfg)
 
-	// Test global functions
 	Configure(WithConsole(false))
 
-	// These should not panic
 	Trace("trace message")
 	Debug("debug message")
 	Info("info message")
 	Warn("warn message")
 	Error("error message")
 
-	// Crit would exit, so we skip it in tests
 
 	Request("GET", "/api/test", 200, 100*time.Millisecond, "127.0.0.1")
 
@@ -288,7 +280,6 @@ func TestGlobalFunctions(t *testing.T) {
 }
 
 func TestGlobalSetLevel(t *testing.T) {
-	// Save original config
 	originalCfg := GetConfig()
 	defer Update(originalCfg)
 
@@ -301,7 +292,6 @@ func TestGlobalSetLevel(t *testing.T) {
 }
 
 func TestGlobalConfigure(t *testing.T) {
-	// Save original config
 	originalCfg := GetConfig()
 	defer Update(originalCfg)
 
@@ -328,7 +318,6 @@ func TestGlobalGetConfig(t *testing.T) {
 }
 
 func TestGlobalUpdate(t *testing.T) {
-	// Save original config
 	originalCfg := GetConfig()
 	defer Update(originalCfg)
 

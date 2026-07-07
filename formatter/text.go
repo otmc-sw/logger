@@ -8,19 +8,19 @@ package formatter
 import (
 	"fmt"
 
-	"github.com/otmc-sw/logger/internal"
+	"github.com/otmc-sw/logger/core"
 )
 
 type TextFormatter struct{}
 
-func NewTextFormatter() internal.Formatter {
+func NewTextFormatter() core.Formatter {
 	return &TextFormatter{}
 }
 
-func (f *TextFormatter) Format(entry internal.Entry) string {
+func (f *TextFormatter) Format(entry core.Entry) string {
 	return fmt.Sprintf("%s %s\n", entry.Level.String(), entry.Message)
 }
 
-func (f *TextFormatter) FormatRequest(req internal.Request) string {
+func (f *TextFormatter) FormatRequest(req core.Request) string {
 	return fmt.Sprintf("%s %s %d %s\n", req.Method, req.Path, req.StatusCode, req.Latency)
 }

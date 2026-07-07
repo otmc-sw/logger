@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/otmc-sw/logger/core"
 	"github.com/otmc-sw/logger/formatter"
-	"github.com/otmc-sw/logger/internal"
 )
 
 var global = New()
@@ -18,7 +18,7 @@ var global = New()
 type Logger struct {
 	mu     sync.RWMutex
 	config Config
-	core   *internal.Core
+	core   *core.Core
 }
 
 func New(opts ...Option) *Logger {
@@ -31,7 +31,6 @@ func New(opts ...Option) *Logger {
 		core:   buildCore(cfg),
 	}
 }
-
 
 func (l *Logger) Configure(opts ...Option) {
 	l.reconfigure(func(cfg *Config) {
@@ -60,33 +59,32 @@ func (l *Logger) SetLevel(level Level) {
 	l.core.SetLevel(level)
 }
 
-
 func (l *Logger) Trace(format string, args ...any) {
-	l.core.Log(internal.TraceLevel, 3, format, args...)
+	l.core.Log(core.TraceLevel, 3, format, args...)
 }
 
 func (l *Logger) Debug(format string, args ...any) {
-	l.core.Log(internal.DebugLevel, 3, format, args...)
+	l.core.Log(core.DebugLevel, 3, format, args...)
 }
 
 func (l *Logger) Info(format string, args ...any) {
-	l.core.Log(internal.InfoLevel, 3, format, args...)
+	l.core.Log(core.InfoLevel, 3, format, args...)
 }
 
 func (l *Logger) Warn(format string, args ...any) {
-	l.core.Log(internal.WarnLevel, 3, format, args...)
+	l.core.Log(core.WarnLevel, 3, format, args...)
 }
 
 func (l *Logger) Error(format string, args ...any) {
-	l.core.Log(internal.ErrorLevel, 3, format, args...)
+	l.core.Log(core.ErrorLevel, 3, format, args...)
 }
 
 func (l *Logger) Crit(format string, args ...any) {
-	l.core.Log(internal.CritLevel, 3, format, args...)
+	l.core.Log(core.CritLevel, 3, format, args...)
 }
 
 func (l *Logger) Request(method, path string, statusCode int, latency time.Duration, clientIP string) {
-	l.core.LogRequest(internal.Request{
+	l.core.LogRequest(core.Request{
 		Time:       time.Now(),
 		Method:     method,
 		Path:       path,
@@ -99,7 +97,6 @@ func (l *Logger) Request(method, path string, statusCode int, latency time.Durat
 func (l *Logger) Sync() error {
 	return l.core.Sync()
 }
-
 
 func (l *Logger) reconfigure(fn func(*Config), rebuild bool) {
 	l.mu.Lock()
@@ -116,8 +113,8 @@ func (l *Logger) rebuild() {
 	_ = old.Sync()
 }
 
-func buildCore(cfg Config) *internal.Core {
-	return internal.NewCore(
+func buildCore(cfg Config) *core.Core {
+	return core.NewCore(
 		cfg.Level,
 		cfg.Caller,
 		buildFormatter(cfg),
@@ -125,20 +122,20 @@ func buildCore(cfg Config) *internal.Core {
 	)
 }
 
-func buildFormatter(cfg Config) internal.Formatter {
+func buildFormatter(cfg Config) core.Formatter {
 	if cfg.JSON {
 		return formatter.NewJSONFormatter(cfg.TimeFormat)
 	}
 	return formatter.NewPrettyFormatter(cfg.Console, cfg.TimeFormat)
 }
 
-func buildWriter(cfg Config) internal.Writer {
-	var writers []internal.Writer
+func buildWriter(cfg Config) core.Writer {
+	var writers []core.Writer
 	if cfg.Console {
-		writers = append(writers, internal.NewConsoleWriter(nil))
+		writers = append(writers, core.NewConsoleWriter(nil))
 	}
 	if cfg.File && cfg.Filename != "" {
-		writers = append(writers, internal.NewRotateWriter(
+		writers = append(writers, core.NewRotateWriter(
 			cfg.Filename, cfg.MaxSize, cfg.MaxBackups, cfg.MaxAge, cfg.Compress,
 		))
 	}
@@ -148,5 +145,5 @@ func buildWriter(cfg Config) internal.Writer {
 	if len(writers) == 1 {
 		return writers[0]
 	}
-	return internal.NewMultiWriter(writers...)
+	return core.NewMultiWriter(writers...)
 }

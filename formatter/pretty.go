@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/otmc-sw/logger/internal"
+	"github.com/otmc-sw/logger/core"
 )
 
 type PrettyFormatter struct {
@@ -17,11 +17,11 @@ type PrettyFormatter struct {
 	timeFormat string
 }
 
-func NewPrettyFormatter(colorize bool, timeFormat string) internal.Formatter {
+func NewPrettyFormatter(colorize bool, timeFormat string) core.Formatter {
 	return &PrettyFormatter{colorize: colorize, timeFormat: timeFormat}
 }
 
-func (f *PrettyFormatter) Format(entry internal.Entry) string {
+func (f *PrettyFormatter) Format(entry core.Entry) string {
 	timeFormat := f.timeFormat
 	if timeFormat == "" {
 		timeFormat = "2006-01-02 15:04:05.000 -07:00"
@@ -31,8 +31,8 @@ func (f *PrettyFormatter) Format(entry internal.Entry) string {
 	message := entry.Message
 
 	if f.colorize {
-		levelStr = internal.ColorLevel(levelStr)
-		message = internal.ColorMessage(entry.Level.String(), message)
+		levelStr = core.ColorLevel(levelStr)
+		message = core.ColorMessage(entry.Level.String(), message)
 	}
 
 	var formatted string
@@ -58,7 +58,7 @@ func (f *PrettyFormatter) Format(entry internal.Entry) string {
 	return formatted
 }
 
-func (f *PrettyFormatter) FormatRequest(req internal.Request) string {
+func (f *PrettyFormatter) FormatRequest(req core.Request) string {
 	timeFormat := f.timeFormat
 	if timeFormat == "" {
 		timeFormat = "15:04:05.000"
@@ -69,10 +69,10 @@ func (f *PrettyFormatter) FormatRequest(req internal.Request) string {
 	statusCodeStr := strconv.Itoa(req.StatusCode)
 
 	if f.colorize {
-		timestamp = internal.ColorTime(timestamp)
-		latency = internal.ColorLatency(latency)
-		method = internal.ColorMethod(method)
-		statusCodeStr = internal.ColorStatusCode(req.StatusCode)
+		timestamp = core.ColorTime(timestamp)
+		latency = core.ColorLatency(latency)
+		method = core.ColorMethod(method)
+		statusCodeStr = core.ColorStatusCode(req.StatusCode)
 	}
 
 	return fmt.Sprintf(

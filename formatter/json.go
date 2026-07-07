@@ -9,18 +9,18 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/otmc-sw/logger/internal"
+	"github.com/otmc-sw/logger/core"
 )
 
 type JSONFormatter struct {
 	timeFormat string
 }
 
-func NewJSONFormatter(timeFormat string) internal.Formatter {
+func NewJSONFormatter(timeFormat string) core.Formatter {
 	return &JSONFormatter{timeFormat: timeFormat}
 }
 
-func (f *JSONFormatter) Format(entry internal.Entry) string {
+func (f *JSONFormatter) Format(entry core.Entry) string {
 	timeFormat := f.timeFormat
 	if timeFormat == "" {
 		timeFormat = time.RFC3339Nano
@@ -38,7 +38,7 @@ func (f *JSONFormatter) Format(entry internal.Entry) string {
 	return string(b) + "\n"
 }
 
-func (f *JSONFormatter) FormatRequest(req internal.Request) string {
+func (f *JSONFormatter) FormatRequest(req core.Request) string {
 	timeFormat := f.timeFormat
 	if timeFormat == "" {
 		timeFormat = time.RFC3339Nano
