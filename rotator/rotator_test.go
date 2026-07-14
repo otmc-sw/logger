@@ -458,8 +458,8 @@ func BenchmarkWrite(b *testing.B) {
 	data := []byte("benchmark log entry\n")
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		r.Write(data)
+	for b.Loop() {
+		_, _ = r.Write(data)
 	}
 }
 

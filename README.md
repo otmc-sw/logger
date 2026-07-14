@@ -18,7 +18,7 @@ A simple, high-performance logging library for Go applications, designed for CLI
 ## 📦 Installation
 
 ```bash
-go get github.com/otmc-sw/logger
+go get github.com/otmc-sw/logger@latest
 ```
 
 ## 🚀 Quick Start
