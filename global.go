@@ -65,3 +65,15 @@ func GetConfig() Config {
 func Update(cfg Config) {
 	global.Update(cfg)
 }
+
+func GetRecentLogs(limit int) []LogEntry {
+	return global.GetRecentLogs(limit)
+}
+
+func AddListener() chan LogEntry {
+	return global.AddListener()
+}
+
+func RemoveListener(ch chan LogEntry) {
+	global.RemoveListener(ch)
+}

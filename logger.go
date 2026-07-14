@@ -15,10 +15,14 @@ import (
 
 var global = New()
 
+type LogEntry = core.Entry
+
 type Logger struct {
-	mu     sync.RWMutex
-	config Config
-	core   *core.Core
+	mu        sync.RWMutex
+	config    Config
+	core      *core.Core
+	logs      []LogEntry
+	listeners []chan LogEntry
 }
 
 func New(opts ...Option) *Logger {
@@ -26,10 +30,14 @@ func New(opts ...Option) *Logger {
 	for _, opt := range opts {
 		opt(&cfg)
 	}
-	return &Logger{
-		config: cfg,
-		core:   buildCore(cfg),
+	l := &Logger{
+		config:    cfg,
+		core:      buildCore(cfg),
+		logs:      make([]LogEntry, 0),
+		listeners: make([]chan LogEntry, 0),
 	}
+	l.core.AddHook(&streamHook{logger: l})
+	return l
 }
 
 func (l *Logger) Configure(opts ...Option) {
@@ -102,6 +110,38 @@ func (l *Logger) Close() error {
 	return l.core.Close()
 }
 
+func (l *Logger) GetRecentLogs(limit int) []LogEntry {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	start := 0
+	if limit > 0 && len(l.logs) > limit {
+		start = len(l.logs) - limit
+	}
+	res := make([]LogEntry, len(l.logs[start:]))
+	copy(res, l.logs[start:])
+	return res
+}
+
+func (l *Logger) AddListener() chan LogEntry {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	ch := make(chan LogEntry, 100)
+	l.listeners = append(l.listeners, ch)
+	return ch
+}
+
+func (l *Logger) RemoveListener(ch chan LogEntry) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	for i, c := range l.listeners {
+		if c == ch {
+			l.listeners = append(l.listeners[:i], l.listeners[i+1:]...)
+			close(ch)
+			break
+		}
+	}
+}
+
 func (l *Logger) reconfigure(fn func(*Config), rebuild bool) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
@@ -150,4 +190,28 @@ func buildWriter(cfg Config) core.Writer {
 		return writers[0]
 	}
 	return core.NewMultiWriter(writers...)
+}
+
+type streamHook struct {
+	logger *Logger
+}
+
+func (h *streamHook) Fire(entry core.Entry) error {
+	h.logger.mu.Lock()
+	defer h.logger.mu.Unlock()
+
+	h.logger.logs = append(h.logger.logs, entry)
+
+	maxEntries := h.logger.config.MaxLogEntries
+	if maxEntries > 0 && len(h.logger.logs) > maxEntries {
+		h.logger.logs = h.logger.logs[len(h.logger.logs)-maxEntries:]
+	}
+
+	for _, ch := range h.logger.listeners {
+		select {
+		case ch <- entry:
+		default:
+		}
+	}
+	return nil
 }

@@ -73,3 +73,9 @@ func WithTimeFormat(format string) Option {
 		c.TimeFormat = format
 	}
 }
+
+func WithMaxLogEntries(maxEntries int) Option {
+	return func(c *Config) {
+		c.MaxLogEntries = maxEntries
+	}
+}
