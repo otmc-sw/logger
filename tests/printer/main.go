@@ -166,13 +166,13 @@ func testMetadata() {
 		logger.WithJSON(true),
 		logger.WithFile("logs/metadata.json"),
 	)
-	logger.InfoMetadata(map[string]interface{}{
+	logger.Metadata(map[string]interface{}{
 		"userId": 12345,
 		"role":   "admin",
 		"action": "login",
-	}, "✅ User login event")
+	}, logger.InfoLevel, "✅ User login event")
 
-	logger.InfoMetadata(struct {
+	logger.Metadata(struct {
 		OrderID string  `json:"order_id"`
 		Amount  float64 `json:"amount"`
 		Status  string  `json:"status"`
@@ -180,14 +180,14 @@ func testMetadata() {
 		OrderID: "ORD-20260715-001",
 		Amount:  299.99,
 		Status:  "completed",
-	}, "✅ Order processed successfully")
+	}, logger.InfoLevel, "✅ Order processed successfully")
 
-	logger.WarnMetadata("rate_limit_exceeded", "⚠️ Rate limit warning for API key: %s", "sk-xxxx")
-	logger.ErrorMetadata(map[string]interface{}{
+	logger.Metadata("rate_limit_exceeded", logger.WarnLevel, "⚠️ Rate limit warning for API key: %s", "sk-xxxx")
+	logger.Metadata(map[string]interface{}{
 		"errorCode": "DB_CONN_TIMEOUT",
 		"database":  "users-db-01",
 		"timeoutMs": 5000,
-	}, "❌ Database connection timeout")
+	}, logger.ErrorLevel, "❌ Database connection timeout")
 
 	logger.Info("✅ Check logs for metadata output above")
 }
