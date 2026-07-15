@@ -309,6 +309,133 @@ func TestGlobalUpdate(t *testing.T) {
 	}
 }
 
+func TestGlobalGetRecentLogs(t *testing.T) {
+	originalCfg := GetConfig()
+	defer Update(originalCfg)
+
+	Configure(WithConsole(false))
+
+	initialLogs := GetRecentLogs(0)
+	initialCount := len(initialLogs)
+
+	Info("global log 1")
+	Info("global log 2")
+	Info("global log 3")
+	Info("global log 4")
+	Info("global log 5")
+
+	recentLogs := GetRecentLogs(0)
+	expectedCount := initialCount + 5
+	if len(recentLogs) != expectedCount {
+		t.Errorf("GetRecentLogs(0) returned %d logs, want %d", len(recentLogs), expectedCount)
+	}
+
+	recentLogs = GetRecentLogs(3)
+	if len(recentLogs) != 3 {
+		t.Errorf("GetRecentLogs(3) returned %d logs, want 3", len(recentLogs))
+	}
+
+	recentLogs = GetRecentLogs(10)
+	if len(recentLogs) != expectedCount {
+		t.Errorf("GetRecentLogs(10) returned %d logs, want %d", len(recentLogs), expectedCount)
+	}
+
+	recentLogs = GetRecentLogs(-1)
+	if len(recentLogs) != expectedCount {
+		t.Errorf("GetRecentLogs(-1) returned %d logs, want %d", len(recentLogs), expectedCount)
+	}
+}
+
+func TestGlobalAddListener(t *testing.T) {
+	originalCfg := GetConfig()
+	defer Update(originalCfg)
+
+	Configure(WithConsole(false))
+
+	listener := AddListener()
+	if listener == nil {
+		t.Fatal("AddListener() returned nil")
+	}
+
+	Info("global listener test")
+
+	time.Sleep(10 * time.Millisecond)
+
+	select {
+	case entry := <-listener:
+		t.Logf("Received log entry from global listener: Level=%d", entry.Level)
+		if entry.Level != InfoLevel {
+			t.Errorf("Expected log level %d, got %d", InfoLevel, entry.Level)
+		}
+	default:
+		t.Error("No message received from global listener channel")
+	}
+
+	listener2 := AddListener()
+	listener3 := AddListener()
+
+	if listener == listener2 || listener == listener3 || listener2 == listener3 {
+		t.Error("AddListener() should return different channels for different calls")
+	}
+
+	Info("broadcast to global listeners")
+
+	time.Sleep(20 * time.Millisecond)
+
+	receivedCount := 0
+	for _, ch := range []chan LogEntry{listener, listener2, listener3} {
+		select {
+		case <-ch:
+			receivedCount++
+		default:
+		}
+	}
+
+	t.Logf("Global message received by %d out of 3 listeners", receivedCount)
+
+	RemoveListener(listener)
+	RemoveListener(listener2)
+	RemoveListener(listener3)
+}
+
+func TestGlobalRemoveListener(t *testing.T) {
+	originalCfg := GetConfig()
+	defer Update(originalCfg)
+
+	Configure(WithConsole(false))
+
+	listener := AddListener()
+	if listener == nil {
+		t.Fatal("AddListener() returned nil")
+	}
+
+	Info("before global removal")
+	time.Sleep(10 * time.Millisecond)
+
+	select {
+	case <-listener:
+		t.Log("Global listener received message before removal")
+	default:
+		t.Error("Global listener should have received message before removal")
+	}
+
+	RemoveListener(listener)
+
+	_, ok := <-listener
+	if ok {
+		t.Error("Global channel should be closed after RemoveListener")
+	}
+
+	nonExistentListener := make(chan LogEntry, 100)
+	RemoveListener(nonExistentListener)
+	t.Log("Global RemoveListener handled non-existent listener without panic")
+
+	listener2 := AddListener()
+	RemoveListener(listener2)
+	RemoveListener(listener2)
+	t.Log("Global RemoveListener handled duplicate removal without panic")
+}
+
 func TestWithLevel(t *testing.T) {
 	cfg := DefaultConfig()
 	opt := WithLevel(DebugLevel)
@@ -446,4 +573,188 @@ func TestMultipleOptions(t *testing.T) {
 	if cfg.MaxSize != 50.0 {
 		t.Errorf("Multiple options: MaxSize = %v, want 50", cfg.MaxSize)
 	}
+}
+
+func TestGetRecentLogs(t *testing.T) {
+	log := New(WithConsole(false))
+	defer log.Close()
+
+	log.Info("log 1")
+	log.Info("log 2")
+	log.Info("log 3")
+	log.Info("log 4")
+	log.Info("log 5")
+
+	recentLogs := log.GetRecentLogs(0)
+	if len(recentLogs) != 5 {
+		t.Errorf("GetRecentLogs(0) returned %d logs, want 5", len(recentLogs))
+	}
+
+	recentLogs = log.GetRecentLogs(-1)
+	if len(recentLogs) != 5 {
+		t.Errorf("GetRecentLogs(-1) returned %d logs, want 5", len(recentLogs))
+	}
+
+	recentLogs = log.GetRecentLogs(10)
+	if len(recentLogs) != 5 {
+		t.Errorf("GetRecentLogs(10) returned %d logs, want 5", len(recentLogs))
+	}
+
+	recentLogs = log.GetRecentLogs(3)
+	if len(recentLogs) != 3 {
+		t.Errorf("GetRecentLogs(3) returned %d logs, want 3", len(recentLogs))
+	}
+
+	recentLogs = log.GetRecentLogs(2)
+	if len(recentLogs) != 2 {
+		t.Errorf("GetRecentLogs(2) returned %d logs, want 2", len(recentLogs))
+	}
+
+	if len(recentLogs) == 2 {
+		t.Logf("GetRecentLogs(2) returned %d most recent logs", len(recentLogs))
+	}
+
+	emptyLog := New(WithConsole(false))
+	defer emptyLog.Close()
+	emptyLogs := emptyLog.GetRecentLogs(5)
+	if len(emptyLogs) != 0 {
+		t.Errorf("GetRecentLogs(5) on empty logger returned %d logs, want 0", len(emptyLogs))
+	}
+}
+
+func TestAddListener(t *testing.T) {
+	log := New(WithConsole(false))
+	defer log.Close()
+
+	listener := log.AddListener()
+	if listener == nil {
+		t.Fatal("AddListener() returned nil")
+	}
+
+
+	listener2 := log.AddListener()
+	if listener2 == nil {
+		t.Fatal("AddListener() returned nil for second listener")
+	}
+
+	if listener == listener2 {
+		t.Error("AddListener() should return different channels for different calls")
+	}
+
+	log.Info("test message for listener")
+
+	time.Sleep(10 * time.Millisecond)
+
+	select {
+	case entry := <-listener:
+		t.Logf("Received log entry from listener: Level=%d", entry.Level)
+		if entry.Level != InfoLevel {
+			t.Errorf("Expected log level %d, got %d", InfoLevel, entry.Level)
+		}
+	default:
+		t.Error("No message received from listener channel")
+	}
+
+	listeners := make([]chan LogEntry, 0)
+	for i := 0; i < 5; i++ {
+		ch := log.AddListener()
+		if ch == nil {
+			t.Fatalf("AddListener() returned nil at iteration %d", i)
+		}
+		listeners = append(listeners, ch)
+	}
+
+	log.Info("broadcast test")
+
+	time.Sleep(20 * time.Millisecond)
+
+	receivedCount := 0
+	for _, ch := range listeners {
+		select {
+		case <-ch:
+			receivedCount++
+		default:
+		}
+	}
+
+	t.Logf("Message received by %d out of %d listeners", receivedCount, len(listeners))
+
+	for _, ch := range listeners {
+		log.RemoveListener(ch)
+	}
+}
+
+func TestRemoveListener(t *testing.T) {
+	log := New(WithConsole(false))
+	defer log.Close()
+
+	listener := log.AddListener()
+	if listener == nil {
+		t.Fatal("AddListener() returned nil")
+	}
+
+	log.Info("before removal")
+	time.Sleep(10 * time.Millisecond)
+
+	select {
+	case <-listener:
+		t.Log("Listener received message before removal")
+	default:
+		t.Error("Listener should have received message before removal")
+	}
+
+	log.RemoveListener(listener)
+
+	_, ok := <-listener
+	if ok {
+		t.Error("Channel should be closed after RemoveListener")
+	}
+
+	log.Info("after removal")
+	time.Sleep(10 * time.Millisecond)
+
+	_, ok = <-listener
+	if ok {
+		t.Error("Channel should still be closed after sending new logs")
+	}
+
+	nonExistentListener := make(chan LogEntry, 100)
+	log.RemoveListener(nonExistentListener)
+	t.Log("RemoveListener handled non-existent listener without panic")
+
+	listener2 := log.AddListener()
+	log.RemoveListener(listener2)
+	log.RemoveListener(listener2)
+	t.Log("RemoveListener handled duplicate removal without panic")
+
+	listener3 := log.AddListener()
+	listener4 := log.AddListener()
+	listener5 := log.AddListener()
+
+	log.RemoveListener(listener3)
+	log.RemoveListener(listener5)
+
+	_, ok = <-listener3
+	if ok {
+		t.Error("listener3 should be closed")
+	}
+
+	_, ok = <-listener5
+	if ok {
+		t.Error("listener5 should be closed")
+	}
+
+	log.Info("listener4 test")
+	time.Sleep(10 * time.Millisecond)
+
+	select {
+	case entry := <-listener4:
+		if entry.Level == InfoLevel {
+			t.Logf("listener4 is still active and received message (Level=%d)", entry.Level)
+		}
+	default:
+		t.Error("listener4 should still be active and receive messages")
+	}
+
+	log.RemoveListener(listener4)
 }

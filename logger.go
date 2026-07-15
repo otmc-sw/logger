@@ -154,6 +154,7 @@ func (l *Logger) reconfigure(fn func(*Config), rebuild bool) {
 func (l *Logger) rebuild() {
 	old := l.core
 	l.core = buildCore(l.config)
+	l.core.AddHook(&streamHook{logger: l})
 	_ = old.Sync()
 }
 
