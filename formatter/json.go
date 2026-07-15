@@ -34,6 +34,10 @@ func (f *JSONFormatter) Format(entry core.Entry) string {
 		"line":     entry.Line,
 	}
 
+	if entry.Metadata != nil {
+		data["metadata"] = entry.Metadata
+	}
+
 	b, _ := json.Marshal(data)
 	return string(b) + "\n"
 }

@@ -60,6 +60,10 @@ func (c *Core) AddHook(hook Hook) {
 }
 
 func (c *Core) Log(level Level, skip int, format string, args ...any) {
+	c.LogWithMetadata(level, skip, nil, format, args...)
+}
+
+func (c *Core) LogWithMetadata(level Level, skip int, metadata interface{}, format string, args ...any) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -73,6 +77,7 @@ func (c *Core) Log(level Level, skip int, format string, args ...any) {
 	entry.Time = time.Now()
 	entry.Level = level
 	entry.Message = message
+	entry.Metadata = metadata
 
 	if c.caller {
 		caller := GetCaller(skip)

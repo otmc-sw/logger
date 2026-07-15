@@ -26,16 +26,28 @@ func Info(format string, args ...any) {
 	global.core.Log(core.InfoLevel, 3, format, args...)
 }
 
+func InfoMetadata(metadata interface{}, format string, args ...any) {
+	global.core.LogWithMetadata(core.InfoLevel, 4, metadata, format, args...)
+}
+
 func Warn(format string, args ...any) {
-	global.core.Log(core.WarnLevel, 3, format, args...)
+	global.core.Log(core.WarnLevel, 4, format, args...)
+}
+
+func WarnMetadata(metadata interface{}, format string, args ...any) {
+	global.core.LogWithMetadata(core.WarnLevel, 4, metadata, format, args...)
 }
 
 func Error(format string, args ...any) {
-	global.core.Log(core.ErrorLevel, 3, format, args...)
+	global.core.Log(core.ErrorLevel, 4, format, args...)
+}
+
+func ErrorMetadata(metadata interface{}, format string, args ...any) {
+	global.core.LogWithMetadata(core.ErrorLevel, 4, metadata, format, args...)
 }
 
 func Crit(format string, args ...any) {
-	global.core.Log(core.CritLevel, 3, format, args...)
+	global.core.Log(core.CritLevel, 4, format, args...)
 }
 
 func Request(method, path string, statusCode int, latency time.Duration, clientIP string) {

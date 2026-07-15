@@ -24,6 +24,7 @@ func main() {
 	testJSONLogging()
 	testCustomLogger()
 	testLogLevelFiltering()
+	testMetadata()
 	testRequest()
 	_ = logger.Sync()
 
@@ -98,7 +99,11 @@ func testFileLogging() {
 
 func testJSONLogging() {
 	buildHeader("JSON Formatting")
-	logger.Configure(logger.WithJSON(true), logger.WithTimeFormat("15:04:05.000"))
+	logger.Configure(
+		logger.WithFile("logs/test.json"),
+		logger.WithJSON(true),
+		logger.WithTimeFormat("15:04:05.000"),
+	)
 
 	logger.Info("✅ JSON formatted message")
 	logger.Warn("⚠️ JSON warning message")
@@ -107,7 +112,7 @@ func testJSONLogging() {
 
 	_ = logger.Sync()
 
-	logger.Configure(logger.WithJSON(false), logger.WithConsole(true))
+	logger.Configure(logger.WithJSON(false), logger.WithConsole(true), logger.WithFile(""))
 }
 
 func testCustomLogger() {
@@ -153,6 +158,38 @@ func testLogLevelFiltering() {
 	logger.Info("✅ This info should NOT appear")
 	logger.Warn("⚠️ This warn should NOT appear")
 	logger.Error("❌ This error SHOULD appear")
+}
+
+func testMetadata() {
+	buildHeader("Metadata Logging JSON")
+	logger.Configure(
+		logger.WithJSON(true),
+		logger.WithFile("logs/metadata.json"),
+	)
+	logger.InfoMetadata(map[string]interface{}{
+		"userId": 12345,
+		"role":   "admin",
+		"action": "login",
+	}, "✅ User login event")
+
+	logger.InfoMetadata(struct {
+		OrderID string  `json:"order_id"`
+		Amount  float64 `json:"amount"`
+		Status  string  `json:"status"`
+	}{
+		OrderID: "ORD-20260715-001",
+		Amount:  299.99,
+		Status:  "completed",
+	}, "✅ Order processed successfully")
+
+	logger.WarnMetadata("rate_limit_exceeded", "⚠️ Rate limit warning for API key: %s", "sk-xxxx")
+	logger.ErrorMetadata(map[string]interface{}{
+		"errorCode": "DB_CONN_TIMEOUT",
+		"database":  "users-db-01",
+		"timeoutMs": 5000,
+	}, "❌ Database connection timeout")
+
+	logger.Info("✅ Check logs for metadata output above")
 }
 
 func testRequest() {

@@ -79,12 +79,24 @@ func (l *Logger) Info(format string, args ...any) {
 	l.core.Log(core.InfoLevel, 3, format, args...)
 }
 
+func (l *Logger) InfoMetadata(metadata interface{}, format string, args ...any) {
+	l.core.LogWithMetadata(core.InfoLevel, 3, metadata, format, args...)
+}
+
 func (l *Logger) Warn(format string, args ...any) {
 	l.core.Log(core.WarnLevel, 3, format, args...)
 }
 
 func (l *Logger) Error(format string, args ...any) {
 	l.core.Log(core.ErrorLevel, 3, format, args...)
+}
+
+func (l *Logger) WarnMetadata(metadata interface{}, format string, args ...any) {
+	l.core.LogWithMetadata(core.WarnLevel, 3, metadata, format, args...)
+}
+
+func (l *Logger) ErrorMetadata(metadata interface{}, format string, args ...any) {
+	l.core.LogWithMetadata(core.ErrorLevel, 3, metadata, format, args...)
 }
 
 func (l *Logger) Crit(format string, args ...any) {

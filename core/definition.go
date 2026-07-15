@@ -28,6 +28,7 @@ type Entry struct {
 	File     string
 	Line     int
 	Message  string
+	Metadata interface{}
 }
 
 type Request struct {
