@@ -15,15 +15,15 @@ type Formatter = core.Formatter
 type Hook = core.Hook
 
 func Trace(format string, args ...any) {
-	global.core.Log(core.TraceLevel, 3, format, args...)
+	global.core.Log(core.TraceLevel, 4, format, args...)
 }
 
 func Debug(format string, args ...any) {
-	global.core.Log(core.DebugLevel, 3, format, args...)
+	global.core.Log(core.DebugLevel, 4, format, args...)
 }
 
 func Info(format string, args ...any) {
-	global.core.Log(core.InfoLevel, 3, format, args...)
+	global.core.Log(core.InfoLevel, 4, format, args...)
 }
 
 func Metadata(metadata interface{}, level Level, format string, args ...any) {
