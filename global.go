@@ -27,7 +27,7 @@ func Info(format string, args ...any) {
 }
 
 func Metadata(metadata interface{}, level Level, format string, args ...any) {
-	global.core.LogWithMetadata(level, 4, metadata, format, args...)
+	global.core.LogWithMetadata(level, 3, metadata, format, args...)
 }
 
 func Warn(format string, args ...any) {

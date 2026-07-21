@@ -80,7 +80,7 @@ func (l *Logger) Info(format string, args ...any) {
 }
 
 func (l *Logger) Metadata(metadata interface{}, level Level, format string, args ...any) {
-	l.core.LogWithMetadata(level, 4, metadata, format, args...)
+	l.core.LogWithMetadata(level, 3, metadata, format, args...)
 }
 
 func (l *Logger) Warn(format string, args ...any) {

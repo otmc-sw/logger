@@ -6,7 +6,6 @@
 package formatter
 
 import (
-	"encoding/json"
 	"fmt"
 	"strconv"
 
@@ -56,27 +55,7 @@ func (f *PrettyFormatter) Format(entry core.Entry) string {
 		)
 	}
 
-	if entry.Metadata != nil {
-		metaStr := formatMetadata(entry.Metadata)
-		formatted += " " + metaStr
-	}
-
 	return formatted + "\n"
-}
-
-func formatMetadata(metadata interface{}) string {
-	switch v := metadata.(type) {
-	case string:
-		return fmt.Sprintf("[%s]", v)
-	case fmt.Stringer:
-		return fmt.Sprintf("[%s]", v.String())
-	default:
-		b, err := json.Marshal(v)
-		if err != nil {
-			return fmt.Sprintf("[%v]", v)
-		}
-		return fmt.Sprintf("[%s]", string(b))
-	}
 }
 
 func (f *PrettyFormatter) FormatRequest(req core.Request) string {
