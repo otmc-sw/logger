@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @License Apache License 2.0
  * @Copyright (c) 2026 OTMC Softwares. OTMC Golang Logger.
  * @Contributors Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
@@ -86,7 +86,7 @@ type backupInfo struct {
 
 func isBackupFile(filename, baseName, ext string) bool {
 	if filename == baseName+ext {
-		return false // This is the active file
+		return false 
 	}
 	
 	if len(filename) <= len(baseName) {

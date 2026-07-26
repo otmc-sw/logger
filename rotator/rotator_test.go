@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @License Apache License 2.0
  * @Copyright (c) 2026 OTMC Softwares. OTMC Golang Logger.
  * @Contributors Nguyen Van Trung, Nguyen Thi Hoai, OTMC Contributors.
@@ -386,9 +386,9 @@ func TestParseFilename(t *testing.T) {
 	}{
 		{"app.log", "app", ".log"},
 		{"app.txt", "app", ".txt"},
-		{"app", "app", ""},                 // no extension
-		{".log", "log", ".log"},            // hidden file with extension
-		{"path/to/app.log", "app", ".log"}, // path is stripped
+		{"app", "app", ""},
+		{".log", "log", ".log"},
+		{"path/to/app.log", "app", ".log"},
 	}
 
 	for _, tt := range tests {
