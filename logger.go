@@ -79,6 +79,10 @@ func (l *Logger) Info(format string, args ...any) {
 	l.core.Log(core.InfoLevel, 4, format, args...)
 }
 
+func (l *Logger) Event(format string, args ...any) {
+	l.core.Log(core.EventLevel, 4, format, args...)
+}
+
 func (l *Logger) Metadata(metadata interface{}, level Level, format string, args ...any) {
 	l.core.LogWithMetadata(level, 3, metadata, format, args...)
 }
@@ -93,10 +97,6 @@ func (l *Logger) Error(format string, args ...any) {
 
 func (l *Logger) Crit(format string, args ...any) {
 	l.core.Log(core.CritLevel, 4, format, args...)
-}
-
-func (l *Logger) Event(format string, args ...any) {
-	l.core.Log(core.InfoLevel, 4, format, args...)
 }
 
 func (l *Logger) Request(method, path string, statusCode int, latency time.Duration, clientIP string) {
@@ -226,4 +226,3 @@ func (h *streamHook) Fire(entry core.Entry) error {
 	}
 	return nil
 }
-

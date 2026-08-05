@@ -14,6 +14,7 @@ const (
 	TraceLevel = core.TraceLevel
 	DebugLevel = core.DebugLevel
 	InfoLevel  = core.InfoLevel
+	EventLevel = core.EventLevel
 	WarnLevel  = core.WarnLevel
 	ErrorLevel = core.ErrorLevel
 	CritLevel  = core.CritLevel
@@ -27,6 +28,8 @@ func ParseLevel(level string) Level {
 		return DebugLevel
 	case "INFO":
 		return InfoLevel
+	case "EVENT":
+		return EventLevel
 	case "WARN":
 		return WarnLevel
 	case "ERROR":

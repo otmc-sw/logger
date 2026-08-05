@@ -45,6 +45,8 @@ func (l Level) String() string {
 		return "DEBUG"
 	case InfoLevel:
 		return "INFO"
+	case EventLevel:
+		return "EVENT"
 	case WarnLevel:
 		return "WARN"
 	case ErrorLevel:
@@ -109,15 +111,13 @@ func (c *Core) LogWithMetadata(level Level, skip int, metadata interface{}, form
 
 	if c.alarmFile != nil && level >= WarnLevel {
 		c.alarmMu.Lock()
-		line := fmt.Sprintf("%s %s %s\n", entry.Time.Format("2006-01-02 15:04:05.000 -07:00"), entry.Level.String(), entry.Message)
-		_, _ = c.alarmFile.WriteString(line)
+		_, _ = c.alarmFile.WriteString(c.formatter.Format(entry))
 		c.alarmMu.Unlock()
 	}
 
-	if c.eventFile != nil && level == InfoLevel {
+	if c.eventFile != nil && level == EventLevel {
 		c.eventMu.Lock()
-		line := fmt.Sprintf("%s %s\n", entry.Time.Format("2006-01-02 15:04:05.000 -07:00"), entry.Message)
-		_, _ = c.eventFile.WriteString(line)
+		_, _ = c.eventFile.WriteString(c.formatter.Format(entry))
 		c.eventMu.Unlock()
 	}
 

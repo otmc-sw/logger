@@ -17,6 +17,7 @@ const (
 	TraceLevel Level = iota
 	DebugLevel
 	InfoLevel
+	EventLevel
 	WarnLevel
 	ErrorLevel
 	CritLevel

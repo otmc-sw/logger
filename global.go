@@ -26,6 +26,10 @@ func Info(format string, args ...any) {
 	global.core.Log(core.InfoLevel, 4, format, args...)
 }
 
+func Event(format string, args ...any) {
+	global.core.Log(core.EventLevel, 4, format, args...)
+}
+
 func Metadata(metadata interface{}, level Level, format string, args ...any) {
 	global.core.LogWithMetadata(level, 3, metadata, format, args...)
 }
