@@ -12,6 +12,8 @@ type Config struct {
 	File          bool
 	Filename      string
 	Dir           string
+	Alarm         string
+	Event         string
 	JSON          bool
 	Caller        bool
 	Stacktrace    bool

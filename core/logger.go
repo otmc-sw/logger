@@ -11,8 +11,8 @@ import (
 	"time"
 )
 
-func NewCore(level Level, caller bool, formatter Formatter, writer Writer) *Core {
-	return &Core{
+func NewCore(level Level, caller bool, formatter Formatter, writer Writer, alarmPath string, eventPath string) *Core {
+	c := &Core{
 		level:     level,
 		enabled:   true,
 		caller:    caller,
@@ -20,6 +20,21 @@ func NewCore(level Level, caller bool, formatter Formatter, writer Writer) *Core
 		writer:    writer,
 		hooks:     make([]Hook, 0),
 	}
+	if alarmPath != "" {
+		c.alarmPath = alarmPath
+		file, err := os.OpenFile(alarmPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err == nil {
+			c.alarmFile = file
+		}
+	}
+	if eventPath != "" {
+		c.eventPath = eventPath
+		file, err := os.OpenFile(eventPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err == nil {
+			c.eventFile = file
+		}
+	}
+	return c
 }
 
 func (l Level) String() string {
@@ -92,6 +107,20 @@ func (c *Core) LogWithMetadata(level Level, skip int, metadata interface{}, form
 		_, _ = c.writer.Write([]byte(formatted))
 	}
 
+	if c.alarmFile != nil && level >= WarnLevel {
+		c.alarmMu.Lock()
+		line := fmt.Sprintf("%s %s %s\n", entry.Time.Format("2006-01-02 15:04:05.000 -07:00"), entry.Level.String(), entry.Message)
+		_, _ = c.alarmFile.WriteString(line)
+		c.alarmMu.Unlock()
+	}
+
+	if c.eventFile != nil && level == InfoLevel {
+		c.eventMu.Lock()
+		line := fmt.Sprintf("%s %s\n", entry.Time.Format("2006-01-02 15:04:05.000 -07:00"), entry.Message)
+		_, _ = c.eventFile.WriteString(line)
+		c.eventMu.Unlock()
+	}
+
 	for _, hook := range c.hooks {
 		_ = hook.Fire(entry)
 	}
@@ -124,10 +153,29 @@ func (c *Core) Sync() error {
 }
 
 func (c *Core) Close() error {
+	var err error
 	if c.writer != nil {
-		return c.writer.Close()
+		if e := c.writer.Close(); e != nil {
+			err = e
+		}
 	}
-	return nil
+	if c.alarmFile != nil {
+		c.alarmMu.Lock()
+		if e := c.alarmFile.Close(); e != nil {
+			err = e
+		}
+		c.alarmFile = nil
+		c.alarmMu.Unlock()
+	}
+	if c.eventFile != nil {
+		c.eventMu.Lock()
+		if e := c.eventFile.Close(); e != nil {
+			err = e
+		}
+		c.eventFile = nil
+		c.eventMu.Unlock()
+	}
+	return err
 }
 
 var osExit = func(code int) {

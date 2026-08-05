@@ -25,6 +25,18 @@ func WithDir(dir string) Option {
 	}
 }
 
+func WithAlarm(path string) Option {
+	return func(c *Config) {
+		c.Alarm = path
+	}
+}
+
+func WithEvent(path string) Option {
+	return func(c *Config) {
+		c.Event = path
+	}
+}
+
 func WithFile(filename string) Option {
 	return func(c *Config) {
 		c.File = true

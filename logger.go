@@ -95,6 +95,10 @@ func (l *Logger) Crit(format string, args ...any) {
 	l.core.Log(core.CritLevel, 4, format, args...)
 }
 
+func (l *Logger) Event(format string, args ...any) {
+	l.core.Log(core.InfoLevel, 4, format, args...)
+}
+
 func (l *Logger) Request(method, path string, statusCode int, latency time.Duration, clientIP string) {
 	l.core.LogRequest(core.Request{
 		Time:       time.Now(),
@@ -168,6 +172,8 @@ func buildCore(cfg Config) *core.Core {
 		cfg.Caller,
 		buildFormatter(cfg),
 		buildWriter(cfg),
+		cfg.Alarm,
+		cfg.Event,
 	)
 }
 
@@ -220,3 +226,4 @@ func (h *streamHook) Fire(entry core.Entry) error {
 	}
 	return nil
 }
+
