@@ -11,6 +11,7 @@ type Config struct {
 	Console       bool
 	File          bool
 	Filename      string
+	Dir           string
 	JSON          bool
 	Caller        bool
 	Stacktrace    bool

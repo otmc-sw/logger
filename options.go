@@ -19,6 +19,12 @@ func WithConsole(enabled bool) Option {
 	}
 }
 
+func WithDir(dir string) Option {
+	return func(c *Config) {
+		c.Dir = dir
+	}
+}
+
 func WithFile(filename string) Option {
 	return func(c *Config) {
 		c.File = true
