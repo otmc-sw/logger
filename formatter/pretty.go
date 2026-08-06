@@ -30,8 +30,11 @@ func (f *PrettyFormatter) Format(entry core.Entry) string {
 	levelStr := entry.Level.String()
 	message := entry.Message
 
+	// Apply padding to level string
+	levelStr = fmt.Sprintf(" %-6s", levelStr)
+	
 	if f.colorize {
-		levelStr = core.ColorLevel(levelStr)
+		levelStr = core.ColorLevel(entry.Level.String())
 		message = core.ColorMessage(entry.Level.String(), message)
 	}
 
