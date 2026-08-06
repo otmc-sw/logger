@@ -6,7 +6,6 @@
 package core
 
 import (
-	"os"
 	"sync"
 	"time"
 )
@@ -58,11 +57,7 @@ type Core struct {
 	caller    bool
 	formatter Formatter
 	writer    Writer
-	hooks     []Hook
-	alarmFile *os.File
-	alarmPath string
-	alarmMu   sync.Mutex
-	eventFile *os.File
-	eventPath string
-	eventMu   sync.Mutex
+	hooks        []Hook
+	alarmRotator *RotateWriter
+	eventRotator *RotateWriter
 }

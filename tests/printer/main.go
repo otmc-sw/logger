@@ -8,7 +8,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/otmc-sw/logger"
@@ -26,6 +25,8 @@ func main() {
 	testLogLevelFiltering()
 	testMetadata()
 	testRequest()
+	testAlarm()
+	testEvent()
 	_ = logger.Sync()
 
 	testCrit()
@@ -100,7 +101,7 @@ func testFileLogging() {
 func testJSONLogging() {
 	buildHeader("JSON Formatting")
 	logger.Configure(
-		logger.WithFile("logs/test.json"),
+		logger.WithFile("logs/test.jsonl"),
 		logger.WithJSON(true),
 		logger.WithTimeFormat("15:04:05.000"),
 	)
@@ -128,9 +129,8 @@ func testCustomLogger() {
 	consoleLog.Warn("⚠️ Custom logger - warn")
 	consoleLog.Error("❌ Custom logger - error")
 
-	logPath, _ := filepath.Abs("logs/custom.log")
 	fileLog := logger.New(
-		logger.WithFile(logPath),
+		logger.WithFile("logs/custom.log"),
 		logger.WithConsole(false),
 	)
 
@@ -164,7 +164,7 @@ func testMetadata() {
 	buildHeader("Metadata Logging JSON")
 	logger.Configure(
 		logger.WithJSON(true),
-		logger.WithFile("logs/metadata.json"),
+		logger.WithFile("logs/metadata.jsonl"),
 	)
 	logger.Metadata(map[string]interface{}{
 		"userId": 12345,
@@ -201,6 +201,18 @@ func testRequest() {
 	logger.Request("POST", "/error", 500, 200*time.Millisecond, "192.168.1.50")
 	logger.Request("PUT", "/api/data", 200, 100*time.Millisecond, "172.16.0.100")
 	logger.Request("PATCH", "/api/data", 200, 100*time.Millisecond, "172.16.0.100")
+}
+
+func testAlarm() {
+	buildHeader("Alarm Logging")
+	alarm_logger := logger.New(logger.WithFile("logs/alarm.log"))
+	alarm_logger.Warn("🚨 This alarm SHOULD appear")
+}
+
+func testEvent() {
+	buildHeader("Event Logging")
+	event_logger := logger.New(logger.WithFile("logs/event.log"))
+	event_logger.Event("📊 This event SHOULD appear")
 }
 
 func testCrit() {

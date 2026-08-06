@@ -21,18 +21,10 @@ func NewCore(level Level, caller bool, formatter Formatter, writer Writer, alarm
 		hooks:     make([]Hook, 0),
 	}
 	if alarmPath != "" {
-		c.alarmPath = alarmPath
-		file, err := os.OpenFile(alarmPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err == nil {
-			c.alarmFile = file
-		}
+		c.alarmRotator = NewRotateWriter(alarmPath, 10, 3, 30, false)
 	}
 	if eventPath != "" {
-		c.eventPath = eventPath
-		file, err := os.OpenFile(eventPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err == nil {
-			c.eventFile = file
-		}
+		c.eventRotator = NewRotateWriter(eventPath, 10, 3, 30, false)
 	}
 	return c
 }
@@ -109,16 +101,12 @@ func (c *Core) LogWithMetadata(level Level, skip int, metadata interface{}, form
 		_, _ = c.writer.Write([]byte(formatted))
 	}
 
-	if c.alarmFile != nil && level >= WarnLevel {
-		c.alarmMu.Lock()
-		_, _ = c.alarmFile.WriteString(c.formatter.Format(entry))
-		c.alarmMu.Unlock()
+	if c.alarmRotator != nil && level >= WarnLevel {
+		_, _ = c.alarmRotator.Write([]byte(c.formatter.Format(entry)))
 	}
 
-	if c.eventFile != nil && level == EventLevel {
-		c.eventMu.Lock()
-		_, _ = c.eventFile.WriteString(c.formatter.Format(entry))
-		c.eventMu.Unlock()
+	if c.eventRotator != nil && level == EventLevel {
+		_, _ = c.eventRotator.Write([]byte(c.formatter.Format(entry)))
 	}
 
 	for _, hook := range c.hooks {
@@ -146,10 +134,23 @@ func (c *Core) LogRequest(req Request) {
 }
 
 func (c *Core) Sync() error {
+	var err error
 	if c.writer != nil {
-		return c.writer.Sync()
+		if e := c.writer.Sync(); e != nil {
+			err = e
+		}
 	}
-	return nil
+	if c.alarmRotator != nil {
+		if e := c.alarmRotator.Sync(); e != nil {
+			err = e
+		}
+	}
+	if c.eventRotator != nil {
+		if e := c.eventRotator.Sync(); e != nil {
+			err = e
+		}
+	}
+	return err
 }
 
 func (c *Core) Close() error {
@@ -159,21 +160,15 @@ func (c *Core) Close() error {
 			err = e
 		}
 	}
-	if c.alarmFile != nil {
-		c.alarmMu.Lock()
-		if e := c.alarmFile.Close(); e != nil {
+	if c.alarmRotator != nil {
+		if e := c.alarmRotator.Close(); e != nil {
 			err = e
 		}
-		c.alarmFile = nil
-		c.alarmMu.Unlock()
 	}
-	if c.eventFile != nil {
-		c.eventMu.Lock()
-		if e := c.eventFile.Close(); e != nil {
+	if c.eventRotator != nil {
+		if e := c.eventRotator.Close(); e != nil {
 			err = e
 		}
-		c.eventFile = nil
-		c.eventMu.Unlock()
 	}
 	return err
 }

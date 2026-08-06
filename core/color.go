@@ -55,6 +55,8 @@ func ColorLevel(level string) string {
 		return ColorCyanBg + fmtLevel + ColorReset
 	case "INFO":
 		return ColorBlueBg + fmtLevel + ColorReset
+	case "EVENT":
+		return ColorGreenBg + fmtLevel + ColorReset
 	case "WARN":
 		return ColorYellowBg + fmtLevel + ColorReset
 	case "ERROR":
@@ -73,6 +75,8 @@ func StripColorCodes(s string) string {
 
 func ColorMessage(level string, message string) string {
 	switch level {
+	case "EVENT":
+		return ColorGreen + message + ColorReset
 	case "WARN":
 		return ColorYellow + message + ColorReset
 	case "ERROR":
