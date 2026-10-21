@@ -68,7 +68,7 @@ func testBasicConsoleLogging() {
 	logger.Trace("🔍 Trace message - detailed debugging")
 	logger.Debug("🐛 Debug message - debugging info")
 	logger.Info("✅ Info message - general information")
-	logger.Warn("⚠️ Warn message - warning condition")
+	logger.Warn("📝 Warn message - warning condition")
 	logger.Error("❌ Error message - error occurred")
 }
 
@@ -78,7 +78,7 @@ func testNoCaller() {
 	logger.Configure(logger.WithCaller(false))
 	logger.Debug("🐛 Debug message - debugging info")
 	logger.Info("✅ Info message - general information")
-	logger.Warn("⚠️ Warn message - warning condition")
+	logger.Warn("📝 Warn message - warning condition")
 	logger.Error("❌ Error message - error occurred")
 
 	logger.Configure(logger.WithCaller(true))
@@ -91,7 +91,7 @@ func testFileLogging() {
 	logger.Trace("🔍 This trace should not appear (level is Debug)")
 	logger.Debug("🐛 Debug message to file")
 	logger.Info("✅ Info message to file")
-	logger.Warn("⚠️ Warn message to file")
+	logger.Warn("📝 Warn message to file")
 	logger.Error("❌ Error message to file")
 
 	logger.Info("📁 Check logs/test.log for file output")
@@ -107,7 +107,7 @@ func testJSONLogging() {
 	)
 
 	logger.Info("✅ JSON formatted message")
-	logger.Warn("⚠️ JSON warning message")
+	logger.Warn("📝 JSON warning message")
 	logger.Error("❌ JSON error message")
 	logger.Info("📁 Check logs/test.json for JSON output")
 
@@ -126,7 +126,7 @@ func testCustomLogger() {
 	consoleLog.Trace("🔍 Custom logger - trace")
 	consoleLog.Debug("🐛 Custom logger - debug")
 	consoleLog.Info("✅ Custom logger - info")
-	consoleLog.Warn("⚠️ Custom logger - warn")
+	consoleLog.Warn("📝 Custom logger - warn")
 	consoleLog.Error("❌ Custom logger - error")
 
 	fileLog := logger.New(
@@ -135,7 +135,7 @@ func testCustomLogger() {
 	)
 
 	fileLog.Info("✅ Custom file logger - info")
-	fileLog.Warn("⚠️ Custom file logger - warn")
+	fileLog.Warn("📝 Custom file logger - warn")
 	fileLog.Error("❌ Custom file logger - error")
 	_ = fileLog.Sync()
 }
@@ -148,7 +148,7 @@ func testLogLevelFiltering() {
 	logger.Trace("🔍 This trace should NOT appear")
 	logger.Debug("🐛 This debug should NOT appear")
 	logger.Info("✅ This info should NOT appear")
-	logger.Warn("⚠️ This warn SHOULD appear")
+	logger.Warn("📝 This warn SHOULD appear")
 	logger.Error("❌ This error SHOULD appear")
 
 	logger.SetLevel(logger.InfoLevel)
@@ -156,7 +156,7 @@ func testLogLevelFiltering() {
 	logger.Trace("🔍 This trace should NOT appear")
 	logger.Debug("🐛 This debug should NOT appear")
 	logger.Info("✅ This info should NOT appear")
-	logger.Warn("⚠️ This warn should NOT appear")
+	logger.Warn("📝 This warn should NOT appear")
 	logger.Error("❌ This error SHOULD appear")
 }
 
@@ -182,7 +182,7 @@ func testMetadata() {
 		Status:  "completed",
 	}, logger.InfoLevel, "✅ Order processed successfully")
 
-	logger.Metadata("rate_limit_exceeded", logger.WarnLevel, "⚠️ Rate limit warning for API key: %s", "sk-xxxx")
+	logger.Metadata("rate_limit_exceeded", logger.WarnLevel, "📝 Rate limit warning for API key: %s", "sk-xxxx")
 	logger.Metadata(map[string]interface{}{
 		"errorCode": "DB_CONN_TIMEOUT",
 		"database":  "users-db-01",
